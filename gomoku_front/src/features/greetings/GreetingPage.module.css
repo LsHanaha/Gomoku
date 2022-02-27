@@ -1,0 +1,81 @@
+@import "../../css/variables.css";
+
+.greetings {
+  height: 100vh;
+  width: 80%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+
+  color: var(--color-white);
+  font-size: large;
+}
+
+.greetings__header {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 2;
+}
+
+.greetings__buttons {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 5;
+
+  flex-direction: column;
+}
+
+.greetings__up_button {
+  cursor: pointer;
+}
+
+.greetings__low_button {
+  margin-top: 5vh;
+  cursor: pointer;
+}
+
+.header {
+  display: flex;
+
+
+  color: var(--color-white);
+  text-transform: uppercase;
+
+  backface-visibility: hidden;
+}
+
+.header_main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 6rem;
+  font-weight: 400;
+  letter-spacing: 3.5rem;
+
+  animation-name: moveInLeft;
+  animation-duration: 4s;
+  animation-timing-function: ease-out;
+
+  /*margin-left: 15rem;*/
+}
+
+.header_sub {
+  display: flex;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1.75rem;
+
+  animation-name: moveInRight;
+  animation-duration: 4s;
+  animation-timing-function: ease-out;
+}

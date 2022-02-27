@@ -1,0 +1,52 @@
+
+.greetings {
+    height: 100vh;
+    width: 80%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+
+    color: $color-white;
+    font-size: large;
+
+    &__header {
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 2;
+    }
+
+    &__buttons {
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 5;
+
+        flex-direction: column;
+    }
+
+    &__footer{
+        width: 100%;
+
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        flex-grow: 1;
+        margin-bottom: 1vh;
+    }
+
+    &--up-button {
+        cursor: pointer;
+    }
+
+    &--low-button {
+        margin-top: 5vh;
+        cursor: pointer;
+    }
+}

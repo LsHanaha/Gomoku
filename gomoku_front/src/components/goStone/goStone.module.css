@@ -1,0 +1,33 @@
+.stone {
+    box-shadow:
+            4px 4px 6px 0 rgba(0, 0, 0, 0.25),
+            -2px -2px 4px 0 rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 5rem;
+    height: 5rem;
+}
+
+.large {
+    width: 10rem;
+    height: 10rem;
+}
+
+.black {
+    background: linear-gradient(145deg, #756d68, black);
+}
+
+.white {
+    background: linear-gradient(-45deg, #756d68, #ffffff);
+}
+
+.blue {
+    background: linear-gradient(-45deg, #756d68, blue);
+}
+
+.yellow {
+    background: linear-gradient(-45deg, #756d68, yellow);
+}
+
+.red {
+    background: linear-gradient(-45deg, #756d68, red);
+}

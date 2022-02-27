@@ -1,0 +1,17 @@
+.buttonsGroup {
+
+}
+
+.button {
+    background-color: gray;
+    border-radius: 25px;
+    margin: 0 1rem;
+}
+
+.buttonActive {
+    background-color: #2998ff;
+}
+
+[type='radio'] {
+    display: none;
+}

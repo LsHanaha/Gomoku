@@ -1,0 +1,48 @@
+.dices {
+    display: flex;
+    width: 90%;
+    height: 90%;
+    justify-content: space-around;
+}
+
+.diceText {
+    text-transform: capitalize;
+    font-size: 1.5rem;
+}
+
+.innerDiceContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    width: 15rem;
+    background-color: gray;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+.diceUp {
+    width: 10rem;
+    height: 6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.dice {
+    width: 12rem;
+    height: 12rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.diceDown {
+    width: 10rem;
+    height: 6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}

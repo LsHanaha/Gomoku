@@ -1,0 +1,28 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid black;
+}
+
+.backgroundField {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid black;
+    background-image: url('../../images/desc.jpeg');
+    background-size: cover;
+}
+
+
+.fieldRow {
+    display: flex;
+    flex-direction: row;
+}
+
+
+.fieldCell {
+    width: 13rem;
+    height: 12rem;
+    border: 1px solid black;
+}
+
+

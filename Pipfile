@@ -1,0 +1,37 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "*"
+sqlalchemy = "*"
+alembic = "*"
+psycopg2-binary = "*"
+pydantic = {extras = ["email"], version = "*"}
+uvicorn = "*"
+email-validator = "*"
+python-multipart = "*"
+python-jose = "*"
+cryptography = "*"
+passlib = "*"
+bcrypt = "*"
+jose = "*"
+pyjwt = "*"
+python-decouple = "*"
+fastapi-jwt-auth = "*"
+fastapi-mail = "*"
+aioredis = "*"
+redis = "*"
+docker = "*"
+starlette = "*"
+asyncio = "*"
+python-dotenv = "*"
+
+[dev-packages]
+aiofiles = "*"
+pytest = "*"
+pytest-asyncio = "*"
+
+[requires]
+python_version = "3.10"

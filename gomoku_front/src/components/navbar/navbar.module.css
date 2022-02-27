@@ -1,0 +1,105 @@
+
+.main {
+    width: 100%;
+    height: 5rem;
+    background-color: gray;
+    display: flex;
+    align-items: center;
+    color: white;
+    padding: 0 5rem 0 5rem ;
+}
+
+.homeLink {
+    font-size: 3rem;
+    height: 5rem;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.homeLink:visited {
+    color: white;
+}
+
+.otherLink {
+    display: flex;
+    margin-left: 10rem;
+    height: 5rem;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-size: 2rem;
+    width: 20rem;
+
+    text-decoration: none;
+    transition: all .2s;
+}
+
+.otherLink:visited {
+    color: white;
+}
+
+.otherLink:hover {
+    color: black;
+    font-size: 3rem;
+}
+
+.otherLink.p {
+    border-bottom: 2px solid white;
+}
+
+.logout {
+    display: flex;
+    text-transform: capitalize;
+    cursor: pointer;
+    transition: all .2s;
+    margin-left: auto;
+    font-size: 2rem;
+    color: white;
+}
+
+.logout:hover {
+    color: red;
+    font-size: 2rem;
+    border-bottom: 2px solid red;
+}
+
+.signGroup {
+    display: flex;
+    text-transform: capitalize;
+    transition: all .2s;
+    margin-left: auto;
+    font-size: 2rem;
+    height: 4rem;
+    align-items: center;
+    justify-content: center;
+    width: 20rem;
+}
+
+.signIn {
+    cursor: pointer;
+    color: white;
+}
+
+.signUp {
+    cursor: pointer;
+    color: white;
+}
+
+.signIn:hover {
+    color: green;
+    font-size: 2.5rem;
+    border-bottom: 2px solid green;
+}
+
+.signUp:hover {
+    color: orange;
+    font-size: 2.5rem;
+    border-bottom: 2px solid orange;
+}
+
+.signDelimiter {
+    font-size: 2.5rem;
+    margin: 0 1rem 0 1rem;
+}
+

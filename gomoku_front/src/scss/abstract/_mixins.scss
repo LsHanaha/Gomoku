@@ -1,0 +1,46 @@
+/*
+<600 - phone,
+600-900 - tablet portrait
+900-1200 - tablet landscape
+1200-1800 - small desctop
+1800+ - big desctop
+*/
+
+// breakpoint argument choisese:
+// -phone,
+// -tab-port,
+// -tab-landscape,
+// -big-desktop
+
+@mixin abs-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin respond($breakpoint) {
+  @if ($breakpoint == phone) {
+    @media (max-width: 38rem) {
+      @content;
+    }
+  }
+
+  @if ($breakpoint == tab-port) {
+    @media (max-width: 56.25rem) {
+      @content;
+    }
+  }
+
+  @if ($breakpoint == tab-landscape) {
+    @media (max-width: 75rem) {
+      @content;
+    }
+  }
+
+  @if ($breakpoint == big-desktop) {
+    @media (max-width: 112.5rem) {
+      @content;
+    }
+  }
+}

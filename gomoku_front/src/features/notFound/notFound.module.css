@@ -1,0 +1,17 @@
+.main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+}
+
+.image {
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(
+            to right bottom,
+            rgba(119,   129, 125, 0.1),
+            var(--color-primary-dark)),
+    url('../../images/404-error.png');
+}

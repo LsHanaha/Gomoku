@@ -1,0 +1,46 @@
+@import "../../css/variables.css";
+
+.page_container_header {
+  width: 100%;
+
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  flex-grow: 1;
+  margin-left: 10rem;
+  margin-top: 5rem;
+}
+
+.page_label {
+  text-decoration: none;
+  color: inherit;
+  text-transform: uppercase;
+  backface-visibility: hidden;
+
+  font-size: 4rem;
+
+  font-weight: 700;
+  letter-spacing: 1.5rem;
+}
+
+.form {
+  height: 100%;
+  width: 100%;
+  display: flex;
+
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  color: var(--color-white);
+}
+
+.form__field_error {
+  font-size: 1.7rem;
+  margin-top: 1rem;
+
+  color: var(--color-error);
+  height: 4rem;
+}

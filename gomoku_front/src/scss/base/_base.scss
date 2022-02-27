@@ -1,0 +1,47 @@
+*,
+*::after,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+}
+
+
+html {
+
+    height: 100%;
+    overflow: hidden;
+
+    font-size: 62.5%; // 1rem = 10px; 10px/16px=62.5%
+
+    @include respond(phone) {
+        font-size: 43.75%;  // 1rem = 7px;
+    }
+
+    @include respond(tab-lanscape) {
+        font-size: 56.25%;  // 1rem = 9px;
+    } 
+
+    @include respond(tab-port) {
+        font-size: 50%;     // 1rem = 8px; 8/16=50%
+    }
+
+    @include respond(big-desktop) {
+        font-size: 62.5%;
+    } 
+}
+
+
+body {
+    box-sizing: border-box;
+    height: 100%;
+    overflow: hidden;
+
+    @include respond(tab-port) {
+        padding: 0;
+    } 
+
+    @include respond(phone) {
+        padding: 0;
+    } 
+}

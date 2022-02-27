@@ -1,0 +1,74 @@
+.container {
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.container__inner {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color: white;
+}
+
+.game_container {
+    width: 100%;
+    height: calc(100vh - 5rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+
+    background: linear-gradient(
+            to right bottom,
+            rgba(119,   129, 125, 0.1),
+            var(--color-primary-dark)),
+    url('../../images/wood.jpeg');
+}
+
+.game {
+    margin-top: 2rem;
+    background-color: orangered;
+    display: flex;
+    flex-direction: row;
+    width: 95%;
+    height: calc(100vh - 10rem);
+    align-items: center;
+    justify-content: space-around;
+    min-height: 60rem;
+}
+
+.user {
+    background-color: #2998ff;
+    width: 20rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 3rem;
+}
+
+.user1 {
+    height: 100%;
+    margin-right: auto;
+}
+
+.user2 {
+    height: 100%;
+    margin-left: auto;
+}
+
+.board {
+
+}
+
+
+.footer {
+    font-size: 2rem;
+    margin-top: auto;
+}
