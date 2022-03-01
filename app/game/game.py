@@ -18,8 +18,6 @@ class NewGame:
         if not game.is_hot_seat:
             difficulty, algorithm = await self._get_additional_db_data(settings)
 
-
-
     async def _get_db_data(self, uuid: UUID):
         game = get_queries.get_game_by_uuid(uuid, self._db)
         settings = get_queries.get_game_settings(game.id, self._db)
