@@ -1,0 +1,2 @@
+class GomokuError(Exception):
+    pass

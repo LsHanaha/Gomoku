@@ -61,7 +61,7 @@ class Algorithm(BaseModel):
 class Rule(BaseModel):
     id: int
     name: str
-    description: str
+    description: Optional[str]
 
     class Config:
         orm_mode = True
@@ -85,3 +85,8 @@ class NewGamePostRequest(BaseModel):
 
 class NewGamePostResponse(BaseModel):
     uuid: UUID
+
+
+class Point(BaseModel):
+    row: int
+    col: int

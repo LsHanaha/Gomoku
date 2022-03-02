@@ -1,4 +1,4 @@
-
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound
 from typing import List
@@ -25,6 +25,12 @@ def get_rules(db: Session) -> List[game_schemas.Rule]:
 
 def get_game_by_uuid(uuid: UUID, db: Session) -> game_schemas.Game:
     data = db.query(user_models.Game).where(user_models.Game.uuid == uuid).first()
+    return data
+
+
+def get_last_game_for_user(user_id: int, db: Session) -> game_schemas.Game:
+    data = db.query(user_models.Game).where(user_models.Game.user_id == user_id)\
+        .order_by(desc(user_models.Game.created_at)).first()
     return data
 
 

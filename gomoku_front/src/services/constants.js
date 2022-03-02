@@ -37,7 +37,7 @@ export const GAME_LOCAL_STORAGE = {
 
 export const GAME_ENDPOINTS = {
   prefix: "game/",
-  startGame: '',
+  startGame: 'start/',
   checkStored: 'check-stored/',
   newGame: 'new-game/'
 }

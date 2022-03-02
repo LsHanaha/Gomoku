@@ -1,6 +1,4 @@
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import NoResultFound
-from typing import List
 
 from app.models import user_models
 from app.schemas import game_schemas
@@ -33,3 +31,16 @@ def store_settings(data: dict, db: Session) -> game_schemas.GameSettings:
     db.commit()
     db.refresh(game_settings)
     return game_settings
+
+
+def add_game_in_history(data: dict, db: Session):
+    stored_game = user_models.History(
+        game_id=data['game_id'],
+        winner=data['winner'],
+        result=data['score'],
+        move_count=data['count_of_turns']
+    )
+    db.add(stored_game)
+    db.commit()
+    db.refresh(stored_game)
+    return stored_game

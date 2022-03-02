@@ -48,15 +48,6 @@ class Game(Base):
     user = relationship("User", back_populates='games', uselist=False, cascade='delete')
 
 
-class StoredGame(Base):
-    __tablename__ = 'stored_games'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    game_id = Column(Integer, ForeignKey('games.id', ondelete='CASCADE'), primary_key=True)
-    score = Column(String, nullable=False, server_default="0:0")
-    move_count = Column(Integer, nullable=False, server_default="0")
-
-
 class DifficultyLevel(Base):
     __tablename__ = 'difficulty_levels'
 

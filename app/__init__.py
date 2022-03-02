@@ -1,4 +1,5 @@
-import aioredis
+from aioredis import from_url
+from typing import AsyncIterator
 
 from redis import Redis
 from fastapi_jwt_auth import AuthJWT
@@ -6,12 +7,11 @@ from pydantic import BaseModel
 from app.config import settings
 
 
-async def get_async_redis():
+async def get_async_redis_conn() -> AsyncIterator[Redis]:
     try:
-        pool = await aioredis.create_redis_pool(
-            (settings.redis_host, settings.redis_port), encoding='utf-8',
-            password=settings.redis_password)
-        return pool
+        conn = await from_url(f"redis://:{settings.redis_password}@"
+                              f"{settings.redis_host}:{settings.redis_port}")
+        return conn
     except ConnectionRefusedError as e:
         raise Exception(e)
 

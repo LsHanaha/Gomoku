@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
+from starlette.requests import Request
 from sqlalchemy.orm import Session
 
 from app import AuthJWT
@@ -7,7 +8,9 @@ from app.models import get_db
 from app.schemas import game_schemas
 
 from app.game import parameters
-from app.game import game
+from app.game import game as _create_game
+
+from app.game import game_in_redis
 
 
 game_router = APIRouter(
@@ -18,11 +21,20 @@ game_router = APIRouter(
 
 
 @game_router.get("/check-stored")
-async def has_stored_game(authorize: AuthJWT = Depends()):
+async def has_stored_game(request: Request, authorize: AuthJWT = Depends(),
+                          db: Session = Depends(get_db)):
     # Проверяем есть ли незаконченная игра. Возвращаем ответ да или нет
     authorize.jwt_required()
     user = authorize.get_jwt_subject()
-    return JSONResponse({'is_stored_game': False})
+    game = await _create_game.OldGame().last_user_game_by_user_id(user, db)
+
+    status = False
+    if game:
+        obj = await game_in_redis.load_from_redis(game.uuid, request.app.state.redis)
+        if obj and not obj.has_winner:
+            status = True
+
+    return JSONResponse({'is_stored_game': status})
 
 
 @game_router.get("/new-game", response_model=game_schemas.NewGame)
@@ -45,11 +57,12 @@ async def new_game(data: game_schemas.NewGamePostRequest, authorize: AuthJWT = D
 
 
 @game_router.post("/start")
-async def start_game(data: game_schemas.NewGamePostResponse, db: Session = Depends(get_db),
-                     authorize: AuthJWT = Depends()):
+async def start_game(request: Request, data: game_schemas.NewGamePostResponse,
+                     db: Session = Depends(get_db), authorize: AuthJWT = Depends()):
     # get id of game (new or existing). Init game and return status of operation
-    status = await game.NewGame().create(data, db)
-    return
+    redis = request.app.state.redis
+    status = await _create_game.NewGame(db, redis).create(data)
+    return JSONResponse({'status': status})
 
 
 @game_router.post("/move")

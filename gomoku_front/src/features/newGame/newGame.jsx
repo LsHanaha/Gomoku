@@ -52,10 +52,14 @@ export const NewGame = (props) => {
         'rule': rule,
         'is_debug': isDebug
       })
-      if (res.data) {
+      if (res.data && res.data.uuid) {
         localStorage.removeItem(GAME_LOCAL_STORAGE.uuid);
         localStorage.setItem(GAME_LOCAL_STORAGE.uuid, res?.data?.uuid);
-        history.push(ROUTER_ENDPOINTS.game);
+        const new_game = await postQueries(GAME_ENDPOINTS.startGame, {uuid: res.data.uuid})
+        if (new_game?.data?.status)
+          history.push(ROUTER_ENDPOINTS.game);
+        else
+          throw new Error("Error while starting new game");
       }
     } catch (error) {
       setStartGameLoader(false);

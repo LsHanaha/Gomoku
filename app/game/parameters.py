@@ -61,13 +61,12 @@ class NewGameSettings:
             'field': data.field,
             'dices': ':'.join(data.dices),
             'difficulty': None,
-            'rule': None,
+            'rule': data.rule,
             'algorithm': None,
             'is_debug': False
         }
         if not data.hot_seat:
             settings_data['difficulty'] = data.difficulty
-            settings_data['rule'] = data.rule
             settings_data['algorithm'] = data.algorithm
             settings_data['is_debug'] = data.is_debug
 
