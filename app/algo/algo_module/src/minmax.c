@@ -7,6 +7,7 @@
 static void create_step(g_env* env, move_info* move, int is_player) {
 	move->is_capture = false;
 	// TODO: check capture and make it
+	// захват достаточно сделать только тут
 	assert(env->desk[move->p.x][move->p.y] == EMPTY);
 	if (is_player)
 		env->desk[move->p.x][move->p.y] = PLAYER;
@@ -16,6 +17,10 @@ static void create_step(g_env* env, move_info* move, int is_player) {
 
 static void reverse_step(g_env* env, move_info* move) {
 	env->desk[move->p.x][move->p.y] = EMPTY;
+	// if (move->is_capture) {
+		// env->desk[move->capture_1.x][move->capture_1.y] = ENEMY;
+		// env->desk[move->capture_2.x][move->capture_2.y] = ENEMY;
+	// }
 }
 
 
@@ -25,6 +30,7 @@ static double minmax(g_env* env, fframe* frame, int deep, double alpha, double b
 	if (deep <= 0 || is_game_finished(env, is_maximizing_player)) {
 		// print_desk(env);
 		return estimate_position(env); // ????????
+		// TODO: объединить is_game_finished и estimate_position - ускорит программу в 2 раза
 
 	}
 		// return  is_maximizing_player ?  ;
@@ -72,13 +78,17 @@ static double minmax(g_env* env, fframe* frame, int deep, double alpha, double b
 }
 
 
-
+// Первый уровень minmax
+// Вынесен, чтобы можно было удобно отобрать оптимальные ходы
+// Заранее маллочим все необходимое
+// в frame храним все возможные ходы и оценки ходов
 int minmax_start(g_env* env) {
 	fframe* steps_frames = create_frames(env);
 	// fframe first_frame;
 	// printf("Create first frame fo size: %lld\n", env->size);
 	if (init_frame(&env->first_frame, env->size))
 		return 1;
+	// Всегда рассматриваем соседние с поставленными камушками ходы, + 10 случайных позиций
 	fill_possibly_steps(env, &env->first_frame);
 	
 	// print_steps(&env->first_frame);
@@ -93,13 +103,13 @@ int minmax_start(g_env* env) {
 		// 	continue;
 		create_step(env, &move, true);
 		// print_desk(env);
-		double estimate = minmax(env, steps_frames + 1, env->deep, alpha, betta, false);
+		double estimate = minmax(env, steps_frames + 1, env->deep - 1, alpha, betta, false);
 		// printf("get estimate: %f\n", estimate);
 		env->first_frame.estimate[i] = estimate;
 		alpha = MAX(estimate, alpha);
 		reverse_step(env, &move);
 	}
-	print_steps(&env->first_frame);
+	// print_steps(&env->first_frame);
 	return 0;
 }
 

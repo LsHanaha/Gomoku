@@ -83,6 +83,7 @@ PyObject* create_python_answer(g_env* env) {
 	return ans;
 }
 
+// Точка входа
 PyObject* get_moves(PyObject* self, PyObject* args) {
 	struct game_env env;
 	env.enemy_capture = 0;

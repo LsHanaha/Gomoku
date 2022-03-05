@@ -36,7 +36,8 @@ static void clean(e_counter* c) {
 // [.**..*..] меньше, чем [.**.*...]
 // [.**.*...] меньше, чем [.***....]
 
-
+// Оцениваем ряд:
+// (количество камней) ^ 2 - (количество пустых клеток в ряде) ^ 2
 static double estimate(int counter, int free_spaces_in_row, int free_spaces) {
 	if (counter && counter > free_spaces_in_row &&
 							counter + free_spaces_in_row + free_spaces >= WIN_LENGTH) {
@@ -46,6 +47,7 @@ static double estimate(int counter, int free_spaces_in_row, int free_spaces) {
 		return 0.0;
 	}
 }
+// commit read line
 static void new_line(e_counter* c) {
 	c->estimate += estimate(c->counter, c->free_spaces_in_row - c->free_accum, c->free_spaces);
 	c->free_spaces = 0;
@@ -55,6 +57,7 @@ static void new_line(e_counter* c) {
 	c->counter = 0;
 }
 
+// функция вызывается для каждой клетки
 static void check(e_counter* c, int is_free, int is_player) {
 	if (is_player) {
 		if (!c->counter) {  // нашли новую линию. ограничиваем соседние пустые клетки
@@ -91,7 +94,7 @@ static void check(e_counter* c, int is_free, int is_player) {
 	}
 }
 
-
+// проходим по линиям
 static double estimate_check_line(g_env* env, unsigned char for_player, int *have_five) {
 	e_counter counter;
 
@@ -105,6 +108,7 @@ static double estimate_check_line(g_env* env, unsigned char for_player, int *hav
 	*have_five = MAX(*have_five, counter.five_in_row);
 	return counter.estimate;
 }
+// проходим по столбцам
 static double estimate_check_column(g_env* env, unsigned char for_player, int *have_five) {
 	e_counter counter;
 

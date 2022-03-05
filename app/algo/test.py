@@ -13,11 +13,11 @@ def print_arr(arr):
 	print("-------------------------------------")
 
 arr = [[0] * SIZE for i in range(SIZE)]
-arr[5][6] = 1
-arr[4][6] = 1
-arr[5][6] = 1
-arr[7][6] = 1
-arr[5][4] = 2
+# arr[5][6] = 1
+# arr[4][6] = 1
+# arr[5][6] = 1
+# arr[7][6] = 1
+# arr[5][4] = 2
 # print_arr(arr)
 
 def get_move(arr, player):
