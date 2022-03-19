@@ -1,14 +1,14 @@
-from typing import Union
+from typing import Union, Optional
 from sqlalchemy.orm import Session
 from aioredis import Redis
 
 from app.schemas import game_schemas
 from app.game import game_interfaces
-from app.game import game_in_redis
+from app.game import game_redis
 from app.errors import GomokuError
 
 
-class _Arena:
+class Arena:
 
     def __init__(self, db: Session, redis: Redis):
         self._db = db
@@ -16,48 +16,69 @@ class _Arena:
 
     async def run(self,
                   game: Union[game_interfaces.RobotGame, game_interfaces.HotSeatGame],
-                  move: game_schemas.Point):
+                  move: game_schemas.Point) -> game_schemas.GameResponse:
 
         # clear response field in the game
         game.to_response = None
 
-        await self._check_rule()
+        await self._check_rule(game, move)
         await self._set_move(game, move)
-        await self._check_end_of_game(game)
-        has_winner = await self._end_of_game(game)
-        if has_winner:
-            return
-        await self.run_algorithm()
-        await self._make_response()
+        winner_checked = await self._check_rule(game, move, after_move=True)
+        if not winner_checked:
+            await self._check_end_of_game(game, move)
+        if game.has_winner:
+            return await self._end_of_game(game)
+        await self._change_player(game)
+        if res := await self.run_algorithm(game):
+            return res
         await self._store_game(game)
+        return await self._make_response(game)
 
-    async def _check_rule(self):
-        pass
+    async def _check_rule(self, game: Union[game_interfaces.RobotGame, game_interfaces.HotSeatGame],
+                          move: game_schemas.Point, after_move=False) -> None:
+        winner_checked = await game.check_rule(move, after_move)
+        return winner_checked
 
     @staticmethod
     async def _set_move(game: Union[game_interfaces.RobotGame, game_interfaces.HotSeatGame],
                         move: game_schemas.Point):
         await game.set_move(move)
 
-    async def _check_end_of_game(self, game: Union[game_interfaces.RobotGame, game_interfaces.HotSeatGame]):
-        await game.check_end_of_game()
+    async def _check_end_of_game(self, game: Union[game_interfaces.RobotGame, game_interfaces.HotSeatGame],
+                                 move: game_schemas.Point):
+        await game.check_end_of_game(move)
         if game.has_winner:
-            await game.perform_end_of_game(self._db)
+            await game.perform_end_of_game(self._db, self._redis)
 
     @staticmethod
     async def _change_player(game: Union[game_interfaces.RobotGame, game_interfaces.HotSeatGame]):
         await game.change_player()
 
     @staticmethod
-    async def _end_of_game(game: Union[game_interfaces.RobotGame, game_interfaces.HotSeatGame]):
-        if game.has_winner:
-            return True
+    async def _end_of_game(game: Union[game_interfaces.RobotGame, game_interfaces.HotSeatGame]) \
+            -> game_schemas.GameResponse:
+        end_game = game_schemas.GameEnd(winner=game.curr_player, score=game.score, count_of_turns=game.count_of_turns)
+        return game_schemas.GameResponse(game_end=end_game, game_continue=None)
 
-    async def run_algorithm(self):
+    async def run_algorithm(self, game: Union[game_interfaces.RobotGame,
+                                              game_interfaces.HotSeatGame]) \
+            -> Optional[game_schemas.GameResponse]:
+        if isinstance(game, game_interfaces.HotSeatGame):
+            return
+        # robo_move = await game.run_algorithm()
+        # await self._check_rule(game, robo_move)
+        # await self._set_move(game)
+        # await self._check_end_of_game(game, robo_move)
+        # if game.has_winner:
+        #     return await self._end_of_game(game)
+        # await self._change_player(game)
         pass
 
-    async def _make_response(self):
-        pass
+    @staticmethod
+    async def _make_response(game: Union[game_interfaces.RobotGame, game_interfaces.HotSeatGame]) \
+            -> game_schemas.GameResponse:
+        game_continue = await game.make_response()
+        return game_schemas.GameResponse(game_continue=game_continue, game_end=None)
 
     async def _store_game(self, game: Union[game_interfaces.RobotGame, game_interfaces.HotSeatGame]):
-        await game_in_redis.store_in_redis(game, self._redis)
+        await game_redis.store_in_redis(game, self._redis)

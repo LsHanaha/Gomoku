@@ -1,11 +1,13 @@
+import uuid
+
 from sqlalchemy.orm import Session
 from typing import Optional
 
-from app.crud.game import get_queries, post_queries
+from app.crud.game import get_queries, post_queries, update_queries
 from app.schemas import game_schemas
 
 
-class NewGameData:
+class DataForNewGame:
     def __init__(self, db: Session):
         self._db = db
 
@@ -33,16 +35,25 @@ class NewGameData:
         return data
 
 
-class NewGameSettings:
+class NewGameData:
 
     def __init__(self, db: Session):
         self._db = db
 
     async def store(self, data: game_schemas.NewGamePostRequest, user_id: Optional[int] = None) \
             -> game_schemas.NewGamePostResponse:
-        new_game = await self._add_new_game(data, user_id)
+        new_game = await self._store_game_data(data, user_id)
         await self._add_settings(data, new_game)
         return game_schemas.NewGamePostResponse(uuid=new_game.uuid)
+
+    async def _store_game_data(self, data: game_schemas.NewGamePostRequest, user_id: Optional[int] = None):
+        await self._deactivate_old_games(user_id)
+        new_game = await self._add_new_game(data, user_id)
+        return new_game
+
+    async def _deactivate_old_games(self, user_id: int):
+        update_queries.update_games_statuses_for_user(user_id, self._db)
+        return
 
     async def _add_new_game(self, data: game_schemas.NewGamePostRequest, user_id) \
             -> game_schemas.Game:

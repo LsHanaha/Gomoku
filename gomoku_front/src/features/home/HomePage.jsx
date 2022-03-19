@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import {Navbar} from "components/navbar/navbar";
 
 import { GreetingsFooter } from "components/greetingsFooter";
-import { ROUTER_ENDPOINTS, GAME_ENDPOINTS } from "services/constants";
+import {ROUTER_ENDPOINTS, GAME_ENDPOINTS, GAME_LOCAL_STORAGE} from "services/constants";
 import { getQueries } from "services/game/gameQueries";
 
 import styles from "./HomePage.module.css";
@@ -14,15 +14,15 @@ import styles from "./HomePage.module.css";
 
 export function HomePage(props) {
 
-  const [hasGame, setHasGame] = useState(false);
+  const [storedGameUUID, setStoredGameUUID] = useState(null);
 
   useEffect(() => {
     const query = async () => {
       try {
         const storedGame = await getQueries(GAME_ENDPOINTS.checkStored);
-        setHasGame(storedGame?.is_stored_game);
+        setStoredGameUUID(storedGame?.uuid);
       } catch {
-        setHasGame(false);
+        setStoredGameUUID(false);
       }
     };
     query();
@@ -48,14 +48,15 @@ export function HomePage(props) {
                 new game
               </button>
             </Link>
-            {hasGame &&
+            {storedGameUUID &&
               <Link
-                to={ROUTER_ENDPOINTS.newGame}
+                to={ROUTER_ENDPOINTS.game}
                 className={styles.up_button}
               >
                 <button
                   type="button"
                   className="btn btn--white width-30-rem"
+                  onClick={() => {localStorage.setItem(GAME_LOCAL_STORAGE.uuid, storedGameUUID)}}
                 >
                   resume game
                 </button>

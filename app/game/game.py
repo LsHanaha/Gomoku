@@ -1,11 +1,11 @@
 from aioredis import Redis
 from sqlalchemy.orm import Session
 from uuid import UUID
-from typing import Tuple, Optional, Union
+from typing import Tuple, Optional, Union, Dict
 
 from app.schemas import game_schemas
 from app.crud.game import get_queries
-from app.game import game_in_redis
+from app.game import game_redis
 
 from app.game import algorithms, rules, game_interfaces
 
@@ -43,7 +43,7 @@ class NewGame:
     async def store_instance_in_redis(self, instance: Union[game_interfaces.HotSeatGame,
                                                             game_interfaces.RobotGame]) \
             -> None:
-        await game_in_redis.store_in_redis(instance, self._redis)
+        await game_redis.store_in_redis(instance, self._redis)
         return
 
 
@@ -121,13 +121,33 @@ class NewGameRobot(_CommonMethods):
 
 class OldGame:
 
-    @staticmethod
-    async def last_user_game_by_user_id(user_id: int, db: Session) \
+    def __init__(self, db: Optional[Session], redis: Redis):
+        self._db = db
+        self._redis = redis
+
+    async def get_uuid(self, user_id: int) -> Dict[str, Optional[UUID]]:
+        game: game_schemas.Game = await self._last_user_game_by_user_id(user_id)
+
+        game_uuid = None
+        if game:
+            game_inst = await self.game_from_redis(game.uuid)
+            if game_inst:
+                game_uuid = game_inst.uuid
+        return {"uuid": game_uuid}
+
+    async def _last_user_game_by_user_id(self, user_id: int) \
             -> Optional[game_schemas.Game]:
-        game = get_queries.get_last_game_for_user(user_id, db)
+        game = get_queries.get_last_game_for_user(user_id, self._db)
         if not game:
             return None
 
         if game.status == 'done':
             game = None
         return game
+
+    async def game_from_redis(self, game_uuid: UUID) \
+            -> Optional[Union[game_interfaces.HotSeatGame, game_interfaces.RobotGame]]:
+        obj = await game_redis.load_from_redis(game_uuid, self._redis)
+        if obj and not obj.has_winner:
+            return obj
+        return None

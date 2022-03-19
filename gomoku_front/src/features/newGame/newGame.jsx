@@ -54,7 +54,7 @@ export const NewGame = (props) => {
       })
       if (res.data && res.data.uuid) {
         localStorage.removeItem(GAME_LOCAL_STORAGE.uuid);
-        localStorage.setItem(GAME_LOCAL_STORAGE.uuid, res?.data?.uuid);
+        localStorage.setItem(GAME_LOCAL_STORAGE.uuid, res.data.uuid);
         const new_game = await postQueries(GAME_ENDPOINTS.startGame, {uuid: res.data.uuid})
         if (new_game?.data?.status)
           history.push(ROUTER_ENDPOINTS.game);

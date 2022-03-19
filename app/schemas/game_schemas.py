@@ -84,9 +84,44 @@ class NewGamePostRequest(BaseModel):
 
 
 class NewGamePostResponse(BaseModel):
-    uuid: UUID
+    uuid: Optional[UUID]
 
 
 class Point(BaseModel):
     row: int
     col: int
+    uuid: UUID
+
+
+class GameEnd(BaseModel):
+    winner: int
+    score: List[int]
+    count_of_turns: int
+
+
+class GameContinue(BaseModel):
+    map: List[List[int]]
+    debug: Optional[List[List[List[int]]]]
+    score: List[int]
+    robot_time: Optional[int]
+    count_of_turns: int
+
+
+class GameResponse(BaseModel):
+    game_end: Optional[GameEnd]
+    game_continue: Optional[GameContinue]
+
+
+class StonesInRow(BaseModel):
+    lengths: List[int]
+
+
+class InitGameData(BaseModel):
+    game_mode: str
+    field: str
+    dices: List[str]
+    current_player: int
+    score: List[int]
+    count_of_turns: int
+    rule: str
+    debug: bool

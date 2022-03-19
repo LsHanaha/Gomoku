@@ -27,6 +27,7 @@ docker = "*"
 starlette = "*"
 asyncio = "*"
 python-dotenv = "*"
+numpy = "*"
 
 [dev-packages]
 aiofiles = "*"

@@ -24,7 +24,6 @@ class _Settings(BaseSettings):
     redis_host: str = "localhost"
     redis_port: str = "6379"
     redis_password: str = "iHbYUGy86g67Fyf6767f"
-
     debug: bool = False
 
     class Config:

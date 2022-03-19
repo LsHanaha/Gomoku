@@ -9,8 +9,8 @@ from app.schemas import game_schemas
 
 from app.game import parameters
 from app.game import game as _create_game
-
-from app.game import game_in_redis
+from app.game.arena import Arena
+from app.game import processing
 
 
 game_router = APIRouter(
@@ -20,27 +20,20 @@ game_router = APIRouter(
 )
 
 
-@game_router.get("/check-stored")
+@game_router.get("/check-stored", response_model=game_schemas.NewGamePostResponse)
 async def has_stored_game(request: Request, authorize: AuthJWT = Depends(),
                           db: Session = Depends(get_db)):
-    # Проверяем есть ли незаконченная игра. Возвращаем ответ да или нет
+    # Проверяем есть ли незаконченная игра. Возвращаем uuid если да и None если нет
     authorize.jwt_required()
-    user = authorize.get_jwt_subject()
-    game = await _create_game.OldGame().last_user_game_by_user_id(user, db)
-
-    status = False
-    if game:
-        obj = await game_in_redis.load_from_redis(game.uuid, request.app.state.redis)
-        if obj and not obj.has_winner:
-            status = True
-
-    return JSONResponse({'is_stored_game': status})
+    user_id = authorize.get_jwt_subject()
+    game_uuid = await _create_game.OldGame(db, request.app.state.redis).get_uuid(user_id)
+    return game_uuid
 
 
 @game_router.get("/new-game", response_model=game_schemas.NewGame)
 async def new_game(db: Session = Depends(get_db)):
     # получение списка противников, сложностей, настроек игры, перечня правил
-    data = await parameters.NewGameData(db).collect_all()
+    data = await parameters.DataForNewGame(db).collect_all()
     return data
 
 
@@ -52,13 +45,13 @@ async def new_game(data: game_schemas.NewGamePostRequest, authorize: AuthJWT = D
     user_id = authorize.get_jwt_subject()
     if user_id:
         user_id = int(user_id)
-    uuid = await parameters.NewGameSettings(db).store(data, user_id)
+    uuid = await parameters.NewGameData(db).store(data, user_id)
     return uuid
 
 
 @game_router.post("/start")
 async def start_game(request: Request, data: game_schemas.NewGamePostResponse,
-                     db: Session = Depends(get_db), authorize: AuthJWT = Depends()):
+                     db: Session = Depends(get_db)):
     # get id of game (new or existing). Init game and return status of operation
     redis = request.app.state.redis
     status = await _create_game.NewGame(db, redis).create(data)
@@ -66,11 +59,14 @@ async def start_game(request: Request, data: game_schemas.NewGamePostResponse,
 
 
 @game_router.post("/move")
-async def user_move():
+async def user_move(request: Request, game_point: game_schemas.Point,
+                    db: Session = Depends(get_db)) -> game_schemas.GameResponse:
     # get user move and game id, check rules and game status. Generates robot move.
     # return game status and robot move (if necessary). Возможна отбивка об ошибке в случае если
     # нарушается правило
-    pass
+    game = await _create_game.OldGame(None, request.app.state.redis).game_from_redis(game_point.uuid)
+    result = await Arena(db, request.app.state.redis).run(game, game_point)
+    return result
 
 
 @game_router.get('/help')
@@ -78,3 +74,9 @@ async def lend_a_hand_from_robot():
     # Робот поможет юзеру с ходом. Предположительно, количество будет ограничено.
     # Возвращает рекомендованный ход
     pass
+
+
+@game_router.post('/game-start', response_model=game_schemas.InitGameData)
+async def get_start_data(request: Request, game: game_schemas.NewGamePostResponse):
+    start_data = await processing.init_game_data(request.app.state.redis, game.uuid)
+    return start_data

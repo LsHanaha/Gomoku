@@ -1,5 +1,6 @@
 import abc
 from sqlalchemy.orm import Session
+from aioredis import Redis
 from app.schemas import game_schemas
 
 _COUNT_OF_HELPS = 3
@@ -8,6 +9,7 @@ _COUNT_OF_HELPS = 3
 class _GameABC(abc.ABC):
     def __init__(self, rule, uuid, dice_colors, field_type):
         self.field = self.__init_field()
+        self.field_size = 19
         self.curr_player = 1
         self.count_of_turns = 0
         self.rule_name = rule
@@ -24,15 +26,15 @@ class _GameABC(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def set_move(self, point: game_schemas.Point):
+    async def set_move(self, move: game_schemas.Point):
         pass
 
     @abc.abstractmethod
-    async def check_end_of_game(self):
+    async def check_end_of_game(self, move: game_schemas.Point):
         pass
 
     @abc.abstractmethod
-    async def perform_end_of_game(self, db: Session):
+    async def perform_end_of_game(self, db: Session, redis: Redis):
         pass
 
     @abc.abstractmethod
@@ -40,7 +42,7 @@ class _GameABC(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def check_rule(self):
+    async def check_rule(self, move: game_schemas.Point, after_move=False):
         pass
 
     @staticmethod
@@ -63,7 +65,7 @@ class RobotGameABC(_GameABC):
         self.algorithm_name = algorithm
         self.algorithm_depth = algorithm_depth
         self._last_robot_time = 0
-        self._is_debug = is_debug
+        self.is_debug = is_debug
         super().__init__(*args)
 
     @abc.abstractmethod
