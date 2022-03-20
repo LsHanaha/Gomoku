@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from starlette.requests import Request
 from sqlalchemy.orm import Session
+from typing import Optional
 
 from app import AuthJWT
 from app.models import get_db
@@ -76,7 +77,7 @@ async def lend_a_hand_from_robot():
     pass
 
 
-@game_router.post('/game-start', response_model=game_schemas.InitGameData)
+@game_router.post('/game-start', response_model=Optional[game_schemas.InitGameData])
 async def get_start_data(request: Request, game: game_schemas.NewGamePostResponse):
     start_data = await processing.init_game_data(request.app.state.redis, game.uuid)
     return start_data

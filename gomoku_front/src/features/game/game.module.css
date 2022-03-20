@@ -64,7 +64,6 @@
 }
 
 .board {
-    background-color: orangered;
     width: 110rem;
     height: 100%;
     display: flex;
@@ -73,13 +72,14 @@
 }
 
 .boardData {
-    margin-bottom: auto;
     height: 3rem;
-    background-color: #2998ff;
     width: 100%;
     text-align: center;
     font-size: 2rem;
     text-transform: capitalize;
+}
+.boardBoard {
+    margin-top: 3rem;
 }
 
 .turn {
@@ -95,4 +95,59 @@
 .footer {
     font-size: 2rem;
     margin-top: auto;
+}
+
+.endGame {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100rem;
+}
+
+.endHeader {
+    margin-top: 10rem;
+    font-size: 4rem;
+    text-transform: uppercase;
+}
+
+.endWinner {
+    margin-top: 5rem;
+    font-size: 5rem;
+    font-weight: bolder;
+}
+
+.endScore {
+    margin-top: 5rem;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.endScoreHeader {
+    font-size: 2.5rem;
+}
+
+.endScoreValue {
+    font-size: 3rem;
+}
+
+.endCountOfTurns {
+    margin-top: 5rem;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.endTurnsHeader {
+    font-size: 2.5rem;
+}
+
+.endTurnsValue {
+    font-size: 3rem;
+}
+
+.endMessage {
+    margin-top: 5rem;
+    font-size: 3rem;
+    text-transform: uppercase;
+    color: orange;
 }

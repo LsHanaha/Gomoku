@@ -1,0 +1,48 @@
+.board {
+  width: 760px;
+  height: 760px;
+}
+
+.boardWood {
+  background-size: cover;
+  background-image: url('../../images/desc.jpeg');
+  width: inherit;
+  height: inherit;
+}
+
+.boardDefault {
+  background-size: cover;
+  background-image: url('../../images/board.png');
+  width: inherit;
+  height: inherit;
+}
+
+.boardRow {
+  height: 40px;
+  width: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyCell {
+  width: 30px;
+  height: 30px;
+}
+
+.emptyCell:hover {
+  background: rgba(119,   129, 125, 0.9);
+  /*box-shadow: ;*/
+  border-radius: 50%;
+  box-shadow:
+          4px 4px 6px 0 rgba(0, 0, 0, 0.25),
+          -2px -2px 4px 0 rgba(255, 255, 255, 0.2);
+}

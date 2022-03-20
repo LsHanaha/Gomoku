@@ -4,7 +4,7 @@
     border: 2px solid black;
 }
 
-.backgroundField {
+.backgroundWoodField {
     display: flex;
     flex-direction: column;
     border: 2px solid black;
@@ -12,6 +12,13 @@
     background-size: cover;
 }
 
+.backgroundDefaultField {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid black;
+    background-image: url('../../images/board.png');
+    background-size: cover;
+}
 
 .fieldRow {
     display: flex;

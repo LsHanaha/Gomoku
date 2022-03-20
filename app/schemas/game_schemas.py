@@ -105,6 +105,7 @@ class GameContinue(BaseModel):
     score: List[int]
     robot_time: Optional[int]
     count_of_turns: int
+    current_player: int
 
 
 class GameResponse(BaseModel):
@@ -118,10 +119,11 @@ class StonesInRow(BaseModel):
 
 class InitGameData(BaseModel):
     game_mode: str
-    field: str
+    field_name: str
     dices: List[str]
     current_player: int
     score: List[int]
     count_of_turns: int
     rule: str
     debug: bool
+    field: List[List[int]]

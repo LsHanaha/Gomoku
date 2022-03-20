@@ -6,7 +6,7 @@ import styles from './smallField.module.css';
 
 export const SmallField = (props) => {
 
-  const additional = props.background ? styles.backgroundField : styles.container;
+  const additional = props.background === "default" ? styles.backgroundDefaultField : styles.backgroundWoodField;
 
   return (
     <div className={additional}>

@@ -209,27 +209,17 @@ export const NewGame = (props) => {
                   <div className={[field === 'default' ? styles.fieldSelected : styles.fieldContentFieldContainer]}
                        onClick={() => setField('default')}>
                     <div className={styles.fieldContentField}>
-                      <SmallField first="black" second="white"/>
+                      <SmallField background={"default"}/>
                     </div>
                     <div className={styles.fieldContentFieldName}>
-                      Black And White
-                    </div>
-                  </div>
-
-                  <div className={[field === 'color' ? styles.fieldSelected : styles.fieldContentFieldContainer]}
-                       onClick={() => setField('color')}>
-                    <div className={styles.fieldContentField}>
-                      <SmallField first="blue" second="yellow"/>
-                    </div>
-                    <div className={styles.fieldContentFieldName}>
-                      blue and yellow
+                      Default
                     </div>
                   </div>
 
                   <div className={[field === 'wood' ? styles.fieldSelected : styles.fieldContentFieldContainer]}
                        onClick={() => setField('wood')}>
                     <div className={styles.fieldContentField}>
-                      <SmallField first="" second="" background={true}/>
+                      <SmallField background={"wood"}/>
                     </div>
                     <div className={styles.fieldContentFieldName}>
                       wood
