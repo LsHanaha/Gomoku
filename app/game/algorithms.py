@@ -1,11 +1,10 @@
 import random
-from uuid import UUID
 from app.game.game_interfaces import RobotGame
 
 from app.schemas import game_schemas
 
 
-async def _min_max(game: RobotGame) -> game_schemas.Point:
+async def _min_max(game: RobotGame, depth=None) -> game_schemas.Point:
     col = random.randint(0, 18)
     row = random.randint(0, 18)
     game.last_robot_time = random.randint(100, 1000)

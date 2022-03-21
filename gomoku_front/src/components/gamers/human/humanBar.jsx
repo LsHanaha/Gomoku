@@ -1,9 +1,12 @@
 import React from 'react';
-import styles from './humanBar.module.css'
+
+import { Button } from 'semantic-ui-react'
+
 import {GoStone} from "components/goStone/goStone";
+import styles from './humanBar.module.css'
+
 
 export const HumanBar = (props) => {
-
 
   return (
     <div className={styles.container}>
@@ -19,6 +22,9 @@ export const HumanBar = (props) => {
         <div className={styles.scoreValue}>
           {props.score}
         </div>
+      </div>
+      <div className={styles.buttonContainer}>
+        <Button secondary size="massive" onClick={() => props.help()}>Help</Button>
       </div>
     </div>
   )

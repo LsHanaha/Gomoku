@@ -43,6 +43,7 @@ export const GAME_ENDPOINTS = {
   gameStart: 'game-start/',
   move: 'move/',
   history: '/history',
+  help: '/help'
 }
 
 export const BASE_URL = {

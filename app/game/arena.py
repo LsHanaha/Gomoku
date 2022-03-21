@@ -69,10 +69,10 @@ class Arena:
             robo_move = await game.run_algorithm(game)
             try:
                 await self._check_rule(game, robo_move)
-                await self._set_move(game, robo_move)
                 break
             except GomokuError:
                 pass
+        await self._set_move(game, robo_move)
         winner_checked = await self._check_rule(game, robo_move, after_move=True)
         if not winner_checked:
             await self._check_end_of_game(game, robo_move)

@@ -71,7 +71,6 @@ export const Game = (props) => {
     query();
   }, []);
 
-
   const continueGame = async (data) => {
     setScore(data.score);
     setCurrentPlayer(data.current_player);
@@ -110,6 +109,23 @@ export const Game = (props) => {
     }
   }
 
+  const callForHelp = async () => {
+    try {
+      const response = await postQueries(GAME_ENDPOINTS.help, {
+        uuid: localStorage.getItem(GAME_LOCAL_STORAGE.uuid)
+      });
+      if (response.data.game_continue)
+        await continueGame(response.data.game_continue)
+      if (response.data.game_end)
+        await endGame(response.data.game_end)
+
+    } catch (error) {
+      debugger;
+      setPortalOpen(true);
+      setPortalText(JSON.parse(error.message).detail || error.message);
+    }
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.container__inner}>
@@ -120,7 +136,9 @@ export const Game = (props) => {
             <div className={styles.game}>
               <div className={styles.user1}>
                 <div className={styles.user}  style={currentPlayer === 1 ? {backgroundColor: '#2998ff'} : {}}>
-                  <HumanBar userId={1} score={score[0]} dice={startGameData.dices ? startGameData.dices[0] : 0}/>
+                  <HumanBar userId={1} score={score[0]} dice={startGameData.dices ? startGameData.dices[0] : 0}
+                            help={callForHelp}
+                  />
                 </div>
               </div>
               <div className={styles.board}>
@@ -137,7 +155,9 @@ export const Game = (props) => {
               <div className={styles.user2}>
                 <div className={[styles.user]}  style={currentPlayer === 2 ? {backgroundColor: '#2998ff'} : {}}>
                   {startGameData.game_mode === 'hotseat' &&
-                    <HumanBar userId={2} score={score[1]} dice={startGameData.dices ? startGameData.dices[1] : 0}/>}
+                    <HumanBar userId={2} score={score[1]} dice={startGameData.dices ? startGameData.dices[1] : 0}
+                              help={callForHelp}
+                    />}
                   {startGameData.game_mode === 'robot' &&
                     <RobotBar userId={"robot"} score={score[1]} dice={startGameData.dices ? startGameData.dices[1] : 0}
                       duration={duration} debug={startGameData.debug}

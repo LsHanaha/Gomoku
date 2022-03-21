@@ -59,9 +59,9 @@ async def start_game(request: Request, data: game_schemas.NewGamePostResponse,
     return JSONResponse({'status': status})
 
 
-@game_router.post("/move")
+@game_router.post("/move", response_model=game_schemas.GameResponse)
 async def user_move(request: Request, game_point: game_schemas.Point,
-                    db: Session = Depends(get_db)) -> game_schemas.GameResponse:
+                    db: Session = Depends(get_db)):
     # get user move and game id, check rules and game status. Generates robot move.
     # return game status and robot move (if necessary). Возможна отбивка об ошибке в случае если
     # нарушается правило
@@ -70,11 +70,14 @@ async def user_move(request: Request, game_point: game_schemas.Point,
     return result
 
 
-@game_router.get('/help')
-async def lend_a_hand_from_robot():
+@game_router.post('/help', response_model=game_schemas.GameResponse)
+async def lend_a_hand_from_robot(request: Request, game_uuid: game_schemas.NewGamePostResponse,
+                                 db: Session = Depends(get_db)):
     # Робот поможет юзеру с ходом. Предположительно, количество будет ограничено.
     # Возвращает рекомендованный ход
-    pass
+    game = await _create_game.OldGame(None, request.app.state.redis).game_from_redis(game_uuid.uuid)
+    result = await processing.robot_help(game, db, request.app.state.redis)
+    return result
 
 
 @game_router.post('/game-start', response_model=Optional[game_schemas.InitGameData])

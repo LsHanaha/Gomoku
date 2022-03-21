@@ -8,6 +8,8 @@ from app.schemas import game_schemas
 from app.game.game_interfaces import RobotGame, HotSeatGame
 from app.game.game_redis import load_from_redis
 from app.crud.game import get_queries
+from app.game import algorithms
+from app.game.arena import Arena
 
 
 async def init_game_data(redis: Redis, uuid: UUID) -> Optional[game_schemas.InitGameData]:
@@ -33,3 +35,19 @@ async def init_game_data(redis: Redis, uuid: UUID) -> Optional[game_schemas.Init
 async def get_user_history(user_id: int, db: Session):
     data = get_queries.get_user_history(user_id, db)
     return data
+
+
+async def robot_help(game: Union[RobotGame, HotSeatGame], db: Session, redis: Redis) \
+        -> game_schemas.GameResponse:
+    if game.robot_help[game.curr_player] <= 0:
+        raise GomokuError("No helps left. Each user have only 3 shots.")
+    while True:
+        algo_move = await algorithms.algorithms['min-max'](game, depth=3)
+        try:
+            await game.check_rule(algo_move)
+            break
+        except GomokuError:
+            pass
+    game.robot_help[game.curr_player] -= 1
+    result = await Arena(db, redis).run(game, algo_move)
+    return result
