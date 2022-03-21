@@ -20,6 +20,7 @@ import { VerifyEmailPage } from "features/emailVerification/EmailVerificationPag
 import { HomePage } from "features/home/HomePage";
 import { NewGame } from "features/newGame/newGame";
 import { Game } from "features/game/game";
+import { HistoryOfGames } from "features/historyOfGames/historyOfGames";
 
 import checkAuthentication from "services/auth/checkAuthentication";
 // import 'bootstrap/dist/css/bootstrap.min.css';
@@ -55,6 +56,12 @@ function App() {
             >
               <Game isAuthorized={isUserLoggedIn} handleLogout={setUserLoggedIn}/>
             </Route>
+            <PrivateRoute
+              exact
+              path={ROUTER_ENDPOINTS.history}
+              component={HistoryOfGames}
+              isAuthorized={isUserLoggedIn}
+            />
             <UnregisteredRoute
               exact
               path={ROUTER_ENDPOINTS.greetings}

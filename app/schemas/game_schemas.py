@@ -127,3 +127,10 @@ class InitGameData(BaseModel):
     rule: str
     debug: bool
     field: List[List[int]]
+
+
+class GameHistory(BaseModel):
+    winner: str
+    move_count: int
+    result: str
+    is_hot_seat: bool

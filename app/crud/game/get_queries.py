@@ -61,3 +61,24 @@ def get_rule(rule_id: int, db: Session) -> game_schemas.Rule:
         .first()
     data = game_schemas.Rule(id=db_data.id, name=db_data.name)
     return data
+
+
+def get_user_history(user_id: int, db: Session) \
+        -> List[game_schemas.GameHistory]:
+    db_data = db.query(user_models.History.winner, user_models.History.move_count,
+                       user_models.History.result, user_models.Game.is_hot_seat)\
+        .join(user_models.Game)\
+        .filter(user_models.Game.user_id == user_id)\
+        .all()
+    result = []
+    for row in db_data:
+        winner, turns, score, is_hot_seat = row
+        result.append(
+            game_schemas.GameHistory(
+                winner=winner,
+                move_count=turns,
+                result=score,
+                is_hot_seat=is_hot_seat
+            )
+        )
+    return result

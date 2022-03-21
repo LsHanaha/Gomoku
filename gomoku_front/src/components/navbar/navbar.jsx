@@ -34,18 +34,18 @@ export const Navbar = (props) => {
       >
           new game
       </Link>
-      <Link
+      {props.isAuthorized &&
+        <Link
           to={ROUTER_ENDPOINTS.history}
           className={styles.otherLink}
-      >
+        >
           history
-      </Link>
-
+        </Link>
+      }
       {props.isAuthorized &&
         <Link to={ROUTER_ENDPOINTS.greetings} className={styles.logout} onClick={() => performLogout(props.handleLogout)}>
             logout
         </Link>
-
       }
       {!props.isAuthorized &&
         <div className={styles.signGroup}>

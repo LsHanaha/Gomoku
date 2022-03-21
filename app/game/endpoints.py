@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from starlette.requests import Request
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, List
 
 from app import AuthJWT
 from app.models import get_db
@@ -81,3 +81,11 @@ async def lend_a_hand_from_robot():
 async def get_start_data(request: Request, game: game_schemas.NewGamePostResponse):
     start_data = await processing.init_game_data(request.app.state.redis, game.uuid)
     return start_data
+
+
+@game_router.get('/history', response_model=List[game_schemas.GameHistory])
+async def get_user_history(db: Session = Depends(get_db), authorize: AuthJWT = Depends()):
+    authorize.jwt_required()
+    user_id = authorize.get_jwt_subject()
+    result = await processing.get_user_history(user_id, db)
+    return result

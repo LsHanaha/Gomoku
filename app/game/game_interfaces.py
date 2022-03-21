@@ -38,7 +38,7 @@ class HotSeatGame(HotSeatGameABC):
             post_queries.add_game_in_history({
                 'game_id': game.id,
                 'winner': f"Player {self.curr_player}",
-                'score': self.score,
+                'score': f"{self.score[0]} : {self.score[1]}",
                 'count_of_turns': self.count_of_turns
             }, db)
         update_queries.update_game_status(self.uuid, db)
@@ -91,7 +91,7 @@ class RobotGame(RobotGameABC):
             post_queries.add_game_in_history({
                 'game_id': game.id,
                 'winner': f"Player {self.curr_player}",
-                'score': self.score[self.curr_player],
+                'score': f"{self.score[0]} : {self.score[1]}",
                 'count_of_turns': self.count_of_turns
             }, db)
         update_queries.update_game_status(self.uuid, db)

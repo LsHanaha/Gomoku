@@ -1,11 +1,13 @@
 from aioredis import Redis
 from uuid import UUID
 from typing import Union, Optional
+from sqlalchemy.orm import Session
 
 from app.errors import GomokuError
 from app.schemas import game_schemas
 from app.game.game_interfaces import RobotGame, HotSeatGame
 from app.game.game_redis import load_from_redis
+from app.crud.game import get_queries
 
 
 async def init_game_data(redis: Redis, uuid: UUID) -> Optional[game_schemas.InitGameData]:
@@ -26,3 +28,8 @@ async def init_game_data(redis: Redis, uuid: UUID) -> Optional[game_schemas.Init
     if isinstance(game, RobotGame):
         game_data.debug = game.is_debug
     return game_data
+
+
+async def get_user_history(user_id: int, db: Session):
+    data = get_queries.get_user_history(user_id, db)
+    return data

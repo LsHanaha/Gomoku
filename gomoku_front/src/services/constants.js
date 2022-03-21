@@ -41,7 +41,8 @@ export const GAME_ENDPOINTS = {
   checkStored: 'check-stored/',
   newGame: 'new-game/',
   gameStart: 'game-start/',
-  move: 'move/'
+  move: 'move/',
+  history: '/history',
 }
 
 export const BASE_URL = {
