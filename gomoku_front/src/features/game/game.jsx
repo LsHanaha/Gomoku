@@ -137,7 +137,7 @@ export const Game = (props) => {
               <div className={styles.user1}>
                 <div className={styles.user}  style={currentPlayer === 1 ? {backgroundColor: '#2998ff'} : {}}>
                   <HumanBar userId={1} score={score[0]} dice={startGameData.dices ? startGameData.dices[0] : 0}
-                            help={callForHelp}
+                            help={callForHelp} currentPlayer={currentPlayer}
                   />
                 </div>
               </div>
@@ -156,7 +156,7 @@ export const Game = (props) => {
                 <div className={[styles.user]}  style={currentPlayer === 2 ? {backgroundColor: '#2998ff'} : {}}>
                   {startGameData.game_mode === 'hotseat' &&
                     <HumanBar userId={2} score={score[1]} dice={startGameData.dices ? startGameData.dices[1] : 0}
-                              help={callForHelp}
+                              help={callForHelp} currentPlayer={currentPlayer}
                     />}
                   {startGameData.game_mode === 'robot' &&
                     <RobotBar userId={"robot"} score={score[1]} dice={startGameData.dices ? startGameData.dices[1] : 0}

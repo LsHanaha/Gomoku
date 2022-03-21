@@ -23,9 +23,11 @@ export const HumanBar = (props) => {
           {props.score}
         </div>
       </div>
-      <div className={styles.buttonContainer}>
-        <Button secondary size="massive" onClick={() => props.help()}>Help</Button>
-      </div>
+      {props.currentPlayer === props.userId &&
+        <div className={styles.buttonContainer}>
+          <Button secondary size="massive" onClick={() => props.help()}>Help</Button>
+        </div>
+      }
     </div>
   )
 }
