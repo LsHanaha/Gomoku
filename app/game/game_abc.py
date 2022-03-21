@@ -1,6 +1,8 @@
 import abc
 from sqlalchemy.orm import Session
 from aioredis import Redis
+from uuid import UUID
+
 from app.schemas import game_schemas
 
 _COUNT_OF_HELPS = 3
@@ -17,7 +19,6 @@ class _GameABC(abc.ABC):
         self.dice_colors = dice_colors
         self.field_type = field_type
         self.has_winner = False
-        self.to_response = None
         self.score = [0, 0]  # имеет отношение только к конкретному правилу
         self.robot_help = {1: _COUNT_OF_HELPS, 2: _COUNT_OF_HELPS}
 
@@ -64,11 +65,12 @@ class RobotGameABC(_GameABC):
 
         self.algorithm_name = algorithm
         self.algorithm_depth = algorithm_depth
-        self._last_robot_time = 0
+        self.last_robot_time = 0
         self.is_debug = is_debug
+        self.debug_data = None
         super().__init__(*args)
 
     @abc.abstractmethod
-    async def run_algorithm(self):
+    async def run_algorithm(self, game):
         pass
 

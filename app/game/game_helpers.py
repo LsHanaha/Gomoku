@@ -13,7 +13,7 @@ async def check_end_of_game(game: Union[game_abc._GameABC], move: game_schemas.P
         -> Optional[game_schemas.StonesInRow]:
 
     field = game.field
-    up_down = [row[move.row] for row in field]
+    up_down = [row[move.col] for row in field]
     left_right = field[move.row]
     up_left_down_right = np.diagonal(field, offset=(move.col - move.row))
     down_left_up_right = np.diagonal(np.rot90(field), offset=(move.row - (game.field_size - 1 - move.col)))

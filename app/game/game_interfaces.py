@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
 from aioredis import Redis
+from uuid import UUID
+
 from app.game.game_abc import HotSeatGameABC, RobotGameABC
 from app.schemas import game_schemas
 from app.errors import GomokuError
@@ -56,12 +58,11 @@ class HotSeatGame(HotSeatGameABC):
         return response
 
     async def check_rule(self, move: game_schemas.Point, after_move=False) -> bool:
-        # raise GomokuError(f"Can't set this move, forbidden by rule")
         pass
 
     @staticmethod
     async def run_algorithm():
-        # dummy method to handle arenas methods sequence
+        # dummy method to handle arena sequence
         return None
 
 
@@ -74,6 +75,7 @@ class RobotGame(RobotGameABC):
         self.curr_player = 1 if self.curr_player == 2 else 2
 
     async def set_move(self, move: game_schemas.Point):
+        print(move)
         if self.field[move.row][move.col]:
             raise GomokuError(f"This point is not empty!")
         self.field[move.row][move.col] = self.curr_player
@@ -100,15 +102,16 @@ class RobotGame(RobotGameABC):
     async def make_response(self) -> game_schemas.GameContinue:
         response = game_schemas.GameContinue(
             map=self.field,
-            debug=None,
+            debug=self.debug_data,
             score=self.score,
-            robot_time=None,
+            robot_time=self.last_robot_time,
             count_of_turns=self.count_of_turns,
             current_player=self.curr_player
         )
         return response
 
-    async def run_algorithm(self):
+    async def run_algorithm(self, game) -> game_schemas.Point:
+        # TODO remove mock
         pass
 
     async def check_rule(self, move: game_schemas.Point, after_move=False):

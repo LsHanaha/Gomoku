@@ -77,6 +77,7 @@ export const Game = (props) => {
     setCurrentPlayer(data.current_player);
     setCurrentTurn(data.count_of_turns)
     setField(data.map);
+    setDuration(data.robot_time || 0);
   }
 
   const endGame = async (data) => {

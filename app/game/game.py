@@ -116,7 +116,11 @@ class NewGameRobot(_CommonMethods):
 
     @staticmethod
     async def _set_algorithm(instance: game_interfaces.RobotGame):
-        instance.run_algorithm = algorithms.algorithms[instance.algorithm_name]
+        algo_name = instance.algorithm_name
+        algo_method = algorithms.algorithms.get(algo_name)
+        if algo_method is None:
+            raise KeyError(f"Rule {algo_name} not identified. Call developers")
+        instance.run_algorithm = algo_method
 
 
 class OldGame:

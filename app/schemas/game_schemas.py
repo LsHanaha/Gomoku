@@ -101,7 +101,7 @@ class GameEnd(BaseModel):
 
 class GameContinue(BaseModel):
     map: List[List[int]]
-    debug: Optional[List[List[List[int]]]]
+    debug: Optional[List[List[int]]]
     score: List[int]
     robot_time: Optional[int]
     count_of_turns: int
