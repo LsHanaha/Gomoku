@@ -71,12 +71,32 @@ export const Game = (props) => {
     query();
   }, []);
 
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  const placeDebug = async (debugData) => {
+    const startField = field;
+    let tempVal;
+
+    for (let move of debugData) {
+      let tempField = [...startField];
+      tempVal = tempField[move[0]][move[1]];
+      tempField[move[0]][move[1]] = 3;
+      setField(tempField);
+      await sleep(500);
+      tempField[move[0]][move[1]] = tempVal;
+    }
+  }
+
   const continueGame = async (data) => {
-    setScore(data.score);
-    setCurrentPlayer(data.current_player);
-    setCurrentTurn(data.count_of_turns)
-    setField(data.map);
-    setDuration(data.robot_time || 0);
+    if (data.debug)
+      await placeDebug(data.debug);
+    await setCurrentPlayer(data.current_player);
+    await setCurrentTurn(data.count_of_turns)
+    await setDuration(data.robot_time || 0);
+    await setScore(data.score);
+    await setField(data.map);
   }
 
   const endGame = async (data) => {

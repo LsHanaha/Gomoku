@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from aioredis import Redis
 from uuid import UUID
+from copy import copy
 
 from app.game.game_abc import HotSeatGameABC, RobotGameABC
 from app.schemas import game_schemas
@@ -102,12 +103,14 @@ class RobotGame(RobotGameABC):
     async def make_response(self) -> game_schemas.GameContinue:
         response = game_schemas.GameContinue(
             map=self.field,
-            debug=self.debug_data,
+            debug=copy(self.debug_data),
             score=self.score,
-            robot_time=self.last_robot_time,
+            robot_time=copy(self.last_robot_time),
             count_of_turns=self.count_of_turns,
             current_player=self.curr_player
         )
+        self.debug_data = None
+        self.last_robot_time = None
         return response
 
     async def run_algorithm(self, game) -> game_schemas.Point:

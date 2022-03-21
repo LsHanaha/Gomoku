@@ -9,6 +9,7 @@ async def _min_max(game: RobotGame, depth=None) -> game_schemas.Point:
     row = random.randint(0, 18)
     game.last_robot_time = random.randint(100, 1000)
     game.debug_data = None
+    # game.debug_data = [[0, 0],[1, 1],[2, 2],[3, 3],[4, 4]]
     return game_schemas.Point(
         row=row,
         col=col,

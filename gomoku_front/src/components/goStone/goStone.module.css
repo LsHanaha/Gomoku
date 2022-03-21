@@ -20,6 +20,10 @@
     background: linear-gradient(-45deg, #756d68, #ffffff);
 }
 
+.purple {
+    background: linear-gradient(-45deg, purple, #ffffff);
+}
+
 .blue {
     background: linear-gradient(-45deg, #756d68, blue);
 }

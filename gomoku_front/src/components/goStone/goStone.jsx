@@ -16,6 +16,10 @@ export const GoStone = (props) => {
       color = styles.white;
       break;
 
+    case 'purple':
+      color = styles.purple;
+      break;
+
     case 'yellow':
       color = styles.yellow
       break;
