@@ -1,0 +1,5 @@
+# .gitignore
+algo_module/algo_module.egg-info/
+algo_module/build/
+algo_module/dist/
+*.o
