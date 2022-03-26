@@ -27,16 +27,18 @@ static void reverse_step(g_env* env, move_info* move) {
 
 
 static double minmax(g_env* env, fframe* frame, int deep, double alpha, double betta, int is_maximizing_player) {
-	if (deep <= 0 || is_game_finished(env, is_maximizing_player)) {
+	int is_game_finished = 0;
+	double position_score = estimate_position(env, &is_game_finished, is_maximizing_player ? PLAYER : ENEMY);
+	if (deep <= 0 || is_game_finished) {
 		// print_desk(env);
-		return estimate_position(env); // ????????
+		return position_score; //estimate_position(env); // ????????
 		// TODO: объединить is_game_finished и estimate_position - ускорит программу в 2 раза
 
 	}
 		// return  is_maximizing_player ?  ;
 	fill_possibly_steps(env, frame);
 	if (!frame->moves_quantity) {
-		return estimate_position(env);
+		return position_score; //estimate_position(env);
 	}
 	move_info move;
 	if (is_maximizing_player) {

@@ -24,6 +24,24 @@ static void clean(e_counter* c) {
 	c->five_in_row = 0;
 }
 
+// Вариант оценивания 2:
+// [*****] - выигрыш
+// [.****.] - беспроигрышная позиция
+// [.****] - есть шанс выиграть через ход (особенно если есть 2 такие штуки)
+// [****.] - 
+// [..***.] - можно выиграть
+// [.***..] - 
+// [.**..] - лучше 2 камня с пространством вокруг, чем 3 камня, прижатые к стенке 
+// [***...] - блокируется в один ход
+// [....*...] - лучше ставить фишку так, чтобы рядом было как можно больше свободного места.
+// Максимум в одну сторону может быть 4 свободных места
+
+// Алгоритм:
+// Если камней 3 и больше и есть свободное место с 2 сторон:
+
+
+
+
 // Если внутри линии пропусков не больше камней - считаем это рядом
 //[..... *.*.*....]
 //[..... ***.*....]
@@ -41,7 +59,7 @@ static void clean(e_counter* c) {
 static double estimate(int counter, int free_spaces_in_row, int free_spaces) {
 	if (counter && counter > free_spaces_in_row &&
 							counter + free_spaces_in_row + free_spaces >= WIN_LENGTH) {
-		return (counter * counter * 100) - (free_spaces_in_row * free_spaces_in_row * 10);
+		return ((counter + 1) * (counter + 1) * 100) - (free_spaces_in_row * free_spaces_in_row * 10) + free_spaces * 30;
 	
 	} else {
 		return 0.0;
@@ -163,38 +181,44 @@ static double estimate_diagonale_2(g_env* env, unsigned char for_player, int *ha
 	return counter.estimate;
 }
 
-int is_game_finished(g_env* env, int is_player_move) {
-	if (env->enemy_capture >= MAX_CAPTURES || env->player_capture >= MAX_CAPTURES) {
-		return true;
-	}
-	int five_in_row = 0;
-	// int player = is_player_move ? PLAYER : ENEMY;
-	estimate_check_line(env, PLAYER, &five_in_row);
-	estimate_check_column(env, PLAYER, &five_in_row);
-	estimate_diagonale(env, PLAYER, &five_in_row);
-	estimate_diagonale_2(env, PLAYER, &five_in_row);
-	estimate_check_line(env, ENEMY, &five_in_row);
-	estimate_check_column(env, ENEMY, &five_in_row);
-	estimate_diagonale(env, ENEMY, &five_in_row);
-	estimate_diagonale_2(env, ENEMY, &five_in_row);
-	// TODO:
-	// Находим 5 камней подряд
-	// Рассматриваем все возможные ходы
-	// если есть ход, где выигрывает другой игрок -игра не закончена
+// int is_game_finished(g_env* env, int is_player_move) {
+// 	if (env->enemy_capture >= MAX_CAPTURES || env->player_capture >= MAX_CAPTURES) {
+// 		return true;
+// 	}
+// 	int five_in_row = 0;
+// 	// int player = is_player_move ? PLAYER : ENEMY;
+// 	estimate_check_line(env, PLAYER, &five_in_row);
+// 	estimate_check_column(env, PLAYER, &five_in_row);
+// 	estimate_diagonale(env, PLAYER, &five_in_row);
+// 	estimate_diagonale_2(env, PLAYER, &five_in_row);
+// 	estimate_check_line(env, ENEMY, &five_in_row);
+// 	estimate_check_column(env, ENEMY, &five_in_row);
+// 	estimate_diagonale(env, ENEMY, &five_in_row);
+// 	estimate_diagonale_2(env, ENEMY, &five_in_row);
+// 	// TODO:
+// 	// Находим 5 камней подряд
+// 	// Рассматриваем все возможные ходы
+// 	// если есть ход, где выигрывает другой игрок -игра не закончена
 
 
-	return five_in_row;
-}
+// 	return five_in_row;
+// }
 
-double estimate_position(g_env* env) {
-	int five_in_row;
-	return estimate_check_line(env, PLAYER, &five_in_row) + 
-			estimate_check_column(env, PLAYER, &five_in_row) + 
-			estimate_diagonale(env, PLAYER, &five_in_row) + 
-			estimate_diagonale_2(env, PLAYER, &five_in_row) - 
-			estimate_check_line(env, ENEMY, &five_in_row) -
-			estimate_check_column(env, ENEMY, &five_in_row) -
-			estimate_diagonale(env, ENEMY, &five_in_row) -
-			estimate_diagonale_2(env, ENEMY, &five_in_row);
+double estimate_position(g_env* env, int* five_in_row, int player) {
+	// int five_in_row;
+	// double mult = 1.0; //(player == PLAYER) ? 1.01 : 0.99
+	// if (player == ENEMY) {
+	// 	mult = 1.01; // Только что закончил ход игрок. Боту нужно в первую очередь помешать игроку
+	// } else {
+	// 	mult = 0.99; // Только что закончил ход бот. 
+	// }
+	return estimate_check_line(env, PLAYER, five_in_row) + 
+			estimate_check_column(env, PLAYER, five_in_row) + 
+			estimate_diagonale(env, PLAYER, five_in_row) + 
+			estimate_diagonale_2(env, PLAYER, five_in_row) - 
+			estimate_check_line(env, ENEMY, five_in_row) -
+			estimate_check_column(env, ENEMY, five_in_row) -
+			estimate_diagonale(env, ENEMY, five_in_row) -
+			estimate_diagonale_2(env, ENEMY, five_in_row);
 }
 

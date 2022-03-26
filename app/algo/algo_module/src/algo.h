@@ -27,7 +27,7 @@
 #define false 0
 #define true 1
 #define MAX_CAPTURES 5
-#define RANDOM_STEPS_TRYES 10
+#define RANDOM_STEPS_TRYES 1
 #define WIN_LENGTH 5
 #define WIN_ESTIMATE 10000
 // #define MAX_DEEP 200
@@ -75,8 +75,8 @@ void free_desk(unsigned char **desk);
 int minmax_start(g_env* env);
 
 //estimate
-int is_game_finished(g_env* env, int is_maximizing_player);
-double estimate_position(g_env* env);
+// int is_game_finished(g_env* env, int is_maximizing_player);
+double estimate_position(g_env* env, int* is_game_finished, int player);
 
 //minmax_init
 fframe* create_frames(struct game_env* env);
