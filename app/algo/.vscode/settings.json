@@ -1,9 +1,0 @@
-{
-	"files.associations": {
-		"algo.h": "c",
-		"chrono": "c",
-		"cmath": "c",
-		"complex": "c",
-		"cstdlib": "c"
-	}
-}
