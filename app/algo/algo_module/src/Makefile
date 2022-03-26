@@ -14,7 +14,7 @@ OBJS = $(SRCS_LIST:.c=.o)
 # OPENGL_INCLUDES =  -I/usr/local/Cellar/glfw/3.3.2/include
 # OPENGL_SOURCES =-framework OpenGl -framework Cocoa  -lglfw3 -framework CoreVideo -framework IOKit -lSOIL
 CC = gcc
-CFLAGS = -Wall -Wextra -g
+CFLAGS =
 # CFLAGS = -Wall -Wextra -Werror -g
 
 all: $(NAME)
