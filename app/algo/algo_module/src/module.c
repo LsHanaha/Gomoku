@@ -1,5 +1,6 @@
 
 #include "algo.h"
+#include <Python.h>
 
 static void* create_map(struct game_env* env, PyObject* list) {
 	env->size = PyList_Size(list);
@@ -156,6 +157,25 @@ PyObject* implement_move(PyObject* self, PyObject* args) {
 	// return PyFloat_FromDouble(0.0);
 }
 
+PyObject* is_step_allowed_py(PyObject* self, PyObject* args) {
+	struct game_env env;
+	PyObject* list;
+	int x;
+	int y;
+	if (!PyArg_ParseTuple(args, "O!biii", &PyList_Type, &list, &env.player,
+								&env.rules, &x, &y))
+		return NULL;
+	
+	create_map(&env, list);
+	int is_game_finished = 0;
+	if (is_step_allowed(&env, x, y, env.player)) {
+		return Py_BuildValue("i", 1);
+	} else {
+		return Py_BuildValue("i", 0);
+	}
+}
+
+
 PyObject* is_victory(PyObject* self, PyObject* args) {
 	struct game_env env;
 	PyObject* list;
@@ -167,20 +187,15 @@ PyObject* is_victory(PyObject* self, PyObject* args) {
 	create_map(&env, list);
 	int is_game_finished = 0;
 	double position_score = estimate_position(&env, &is_game_finished, PLAYER);
-	// PyObject* ans;
 	if (!is_game_finished) {
-		return Py_BuildValue("i", 0);
+		return Py_BuildValue("i", EMPTY);
 	} else if (position_score > 0) {
-		return Py_BuildValue("i", 1);
+		return Py_BuildValue("i", PLAYER);
 	}
-	return Py_BuildValue("i", 2);
-	// print_desk(&env);
-	// minmax_start(&env);
-
-	// return create_python_answer(&env);
-	// return list;
-	// return PyFloat_FromDouble(0.0);
+	return Py_BuildValue("i", ENEMY);
 }
+
+
 // array containing the module's methods' definitions
 // put here the methods to export
 // the array must end with a {NULL} struct
@@ -189,6 +204,7 @@ PyMethodDef module_methods[] =
 		// {"c_fib", c_fib, METH_VARARGS, "Method description"},
 		{"get_moves", get_moves, METH_VARARGS, "get possibly good moves"},
 		{"implement_move", implement_move, METH_VARARGS, "get map after move"},
+		{"is_step_allowed", is_step_allowed_py, METH_VARARGS, "get map after move"},
 		{"is_victory", is_victory, METH_VARARGS, "check is victory"},
 		{NULL} // this struct signals the end of the array
 };

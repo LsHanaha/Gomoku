@@ -52,6 +52,7 @@ void create_step(g_env* env, move_info* move, int is_player) {
 		}
 	}
 	if (move->captured_quantity > 0) {
+		printf("Find Capture!! x: %d, y: %d \n", move->p.x, move->p.y);
 		if (is_player) {
 			env->player_capture += 1;
 		} else {
@@ -107,7 +108,7 @@ static double minmax(g_env* env, fframe* frame, int deep, double alpha, double b
 			// print_desk(env);
 			double estimate = minmax(env, frame + 1, deep - 1, alpha, betta, !is_maximizing_player);
 			if (move.captured_quantity > 0) {
-				estimate += 3000;
+				estimate += 4000;
 			}
 			// steps_frames[0].estimate[i] = estimate;
 			reverse_step(env, &move);
@@ -127,7 +128,7 @@ static double minmax(g_env* env, fframe* frame, int deep, double alpha, double b
 			// print_desk(env);
 			double estimate = minmax(env, frame + 1, deep - 1, alpha, betta, !is_maximizing_player);
 			if (move.captured_quantity > 0) {
-				estimate -= 3000;
+				estimate -= 4000;
 			}
 			// steps_frames[0].estimate[i] = estimate;
 			reverse_step(env, &move);
@@ -168,12 +169,18 @@ int minmax_start(g_env* env) {
 		create_step(env, &move, true);
 		// print_desk(env);
 		double estimate = minmax(env, steps_frames + 1, env->deep - 1, alpha, betta, false);
+		printf("HERE \n");
+		if (move.captured_quantity > 0) {
+				estimate += 4000;
+				printf("Print desk\n");
+				print_desk(env);
+		}
 		// printf("get estimate: %f\n", estimate);
 		env->first_frame.estimate[i] = estimate;
 		alpha = MAX(estimate, alpha);
 		reverse_step(env, &move);
 	}
-	// print_steps(&env->first_frame);
+	print_steps(&env->first_frame);
 	return 0;
 }
 

@@ -4,7 +4,7 @@
 
 #define PY_SSIZE_T_CLEAN
 // The actual Python API
-#include <Python.h>
+// #include <Python.h>
 
 
 
@@ -92,5 +92,6 @@ void free_frames(fframe* steps_frames);
 
 //steps
 void fill_possibly_steps(g_env* env, fframe* frame, int player);
+int is_step_allowed(g_env *env, int x, int y, int player);
 
 #endif

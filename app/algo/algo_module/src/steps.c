@@ -100,17 +100,17 @@ static int check_front_line(g_env *env, int x, int y, int x_direction, int y_dir
 
 // [BACK.X.FRONT]
 // Situation 0 - no free-three
-//  [..X**.]	1  // Back Situation 1
+//  [..X**.O]	1  // Back Situation 1
 //  [O.X**..]	2  // Back Situation 2
 //  [O.X.**.]	3  // Back Situation 2
 //  [O.X*.*.]	4  // Back Situation 2
 //  [.*X.*.]	5  // Back Situation 3
 //  [.*X*..]	6  // Back Situation 3
 
-//  [..X**.]	1  // Front Situation 1 and 2  - Back Situation 1
-//  [O.X**..]	2  // Front Situation 2		   - Back Situation 2
-//  [O.X.**.]	3  // Front Situation 3		   - Back Situation 2
-//  [O.X*.*.]	4  // Front Situation 4		   - Back Situation 2
+//  [..X**.O]	1  // Front Situation 1 and 2  - Back Situation 1
+//  [O.X**..]	2  // Front Situation 2		   - Back Situation 2 or 1
+//  [O.X.**.]	3  // Front Situation 3		   - Back Situation 2 or 1
+//  [O.X*.*.]	4  // Front Situation 4		   - Back Situation 2 or 1
 //  [.*X.*.]	5  // Front Situation 5		   - Back Situation 3
 //  [.*X*..]	6  // Front Situation 6		   - Back Situation 3
 
@@ -122,7 +122,7 @@ static int check_free_three(g_env *env, int x, int y, int x_direction, int y_dir
 		return false;
 	} else if (back_situation == SITUATION_1 && (front_situation == SITUATION_1 || front_situation == SITUATION_2)) {
 		return true;
-	} else if (back_situation == SITUATION_2 && (front_situation == SITUATION_2 || front_situation == SITUATION_3 ||
+	} else if ((back_situation == SITUATION_2 || back_situation == SITUATION_1) && (front_situation == SITUATION_2 || front_situation == SITUATION_3 ||
 																					front_situation == SITUATION_4)) {
 		return true;
 	} else if (back_situation == SITUATION_3 && (front_situation == SITUATION_5 || front_situation == SITUATION_6)) {
@@ -144,11 +144,12 @@ int is_step_allowed(g_env *env, int x, int y, int player) {
 			int is_free_three = check_free_three(env, x, y, x_direction, y_direction, player) || 
 								check_free_three(env, x, y, -x_direction, -y_direction, player);
 			if (is_free_three) {
-				printf("Find Free-Three!\n");
+				printf("Find Free-Three! step x: %d, y: %d\n", x, y);
 				++free_three_counter;
 			}
 		}
 		if (free_three_counter > 1) {
+			printf("Block by  Free-Three rule. step x: %d, y: %d\n", x, y);
 			return false;
 		}
 	}
