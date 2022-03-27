@@ -22,7 +22,7 @@ extension = Extension(
 
 setup(
     name=module_name,
-    version='1.0',
+    version='2.0',
     description='minmax for gomoku',
     author='Sergey Shorin',
     author_email='',

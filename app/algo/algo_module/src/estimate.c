@@ -28,9 +28,7 @@ static void clean(e_counter* c) {
 	c->post_section_len = 0;
 	c->estimate = 0.0;
 	c->find_five_in_row = 0;
-	c->is_enemy_win;
-
-
+	c->is_enemy_win = 0;
 }
 
 // Вариант оценивания 2:
@@ -192,10 +190,8 @@ static void estimate(e_counter* c) {
 			c->find_five_in_row = 1;
 			printf("FIND VICTORY!!\n");
 			if (c->is_enemy_win) {
-				// printf("Add 5000!!\n");
 				c->estimate += 5000; // враг уже победил, так победу не сбить
 			} else {
-				// printf("Add 100000!!\n");
 				c->estimate += 100000; // возможно, победа
 			}
 			break;
