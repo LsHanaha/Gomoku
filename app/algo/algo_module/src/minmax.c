@@ -29,7 +29,12 @@ static void reverse_step(g_env* env, move_info* move) {
 static double minmax(g_env* env, fframe* frame, int deep, double alpha, double betta, int is_maximizing_player) {
 	int is_game_finished = 0;
 	double position_score = estimate_position(env, &is_game_finished, is_maximizing_player ? PLAYER : ENEMY);
+	if (is_game_finished) {
+		printf("is_finished: %d, position_score: %lf\n", is_game_finished, position_score);
+
+	}
 	if (deep <= 0 || is_game_finished) {
+		// TODO: Если финиш - то проверям еще один раз все ходы. Если финиш сохранился дл всех - умножаем estimate на 1000
 		// print_desk(env);
 		return position_score; //estimate_position(env); // ????????
 		// TODO: объединить is_game_finished и estimate_position - ускорит программу в 2 раза

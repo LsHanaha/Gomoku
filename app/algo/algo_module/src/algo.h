@@ -69,7 +69,7 @@ typedef struct s_move_info {
 void print_steps(fframe* frame);
 void print_desk(struct game_env* env);
 
-int init_frame(fframe* frame, int size);
+int init_frame(fframe* frame, size_t size);
 
 void free_desk(unsigned char **desk);
 int minmax_start(g_env* env);

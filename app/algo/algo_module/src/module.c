@@ -55,7 +55,7 @@ static void* parse_args(struct game_env* env, PyObject* args) {
 
 
 PyObject* create_python_answer(g_env* env) {
-	int const N = 10;
+	// int const N = 10;
 
 	PyObject* estimates = PyList_New(env->first_frame.moves_quantity);
     for (int i = 0; i < env->first_frame.moves_quantity; ++i)
