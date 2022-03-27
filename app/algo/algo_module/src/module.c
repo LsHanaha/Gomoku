@@ -95,9 +95,9 @@ PyObject* create_python_answer(g_env* env) {
 }
 
 // Точка входа
-PyObject* parse_args_get_moves(PyObject* self, PyObject* args) {
+PyObject* get_moves(PyObject* self, PyObject* args) {
 	struct game_env env;
-	if (!parse_args(&env, args))
+	if (!parse_args_get_moves(&env, args))
 		return NULL;
 	// print_desk(&env);
 	minmax_start(&env);
@@ -112,7 +112,7 @@ PyObject* implement_move(PyObject* self, PyObject* args) {
 	int x;
 	int y;
 	unsigned char enemy_id;
-	PyObject* list
+	PyObject* list;
 
 	if (!PyArg_ParseTuple(args, "O!bbiii", &PyList_Type, &list, &env.player, &enemy_id,
 								&env.rules, &x, &y))
@@ -122,21 +122,20 @@ PyObject* implement_move(PyObject* self, PyObject* args) {
 	move.p.x = x;
 	move.p.y = y;
 	create_step(&env, &move, true);
-	for (Py_ssize_t i = 0; i < env->size; i++) {
+	for (Py_ssize_t i = 0; i < env.size; i++) {
 		PyObject* sublist = PyList_GetItem(list, i);
 
 		if (!PyList_Check(sublist)) {
 			PyErr_SetString(PyExc_TypeError, "List must contain lists");
-			free_desk(env->desk);
+			free_desk(env.desk);
 			return NULL;
 		}
-		if (PyList_Size(sublist) != env->size) {
+		if (PyList_Size(sublist) != env.size) {
 			PyErr_SetString(PyExc_TypeError, "Desk should be square");
-			free_desk(env->desk);
+			free_desk(env.desk);
 			return NULL;
 		}
-		for (Py_ssize_t j = 0; j < env->size; j++) {
-			PyList_SetItem(point, 0, x);
+		for (Py_ssize_t j = 0; j < env.size; j++) {
 			int point_value = 0;
 			if (env.desk[i][j] == EMPTY) {
 				point_value = 0;
@@ -159,20 +158,16 @@ PyObject* implement_move(PyObject* self, PyObject* args) {
 
 PyObject* is_victory(PyObject* self, PyObject* args) {
 	struct game_env env;
-	PyObject* list
+	PyObject* list;
 
 	if (!PyArg_ParseTuple(args, "O!bi", &PyList_Type, &list, &env.player,
 								&env.rules))
 		return NULL;
-	move_info move;
-	move.p.x = x;
-	move.p.y = y;
-	create_step(&env, &move, true);
 	
-	create_map(env, list);
+	create_map(&env, list);
 	int is_game_finished = 0;
 	double position_score = estimate_position(&env, &is_game_finished, PLAYER);
-	PyObject* ans;
+	// PyObject* ans;
 	if (!is_game_finished) {
 		return Py_BuildValue("i", 0);
 	} else if (position_score > 0) {

@@ -133,7 +133,7 @@ static int check_free_three(g_env *env, int x, int y, int x_direction, int y_dir
 
 
 
-bool is_step_allowed(g_env *env, int x, int y, int player) {
+int is_step_allowed(g_env *env, int x, int y, int player) {
 	if (env->rules & FREE_THREE) {
 		int free_three_counter = 0;
 		for (int i = 0; i < 4; ++i) {
@@ -198,7 +198,7 @@ void fill_possibly_steps(g_env* env, fframe* frame, int player) {
 		}
 	}
 	frame->moves_quantity = current_step;
-	add_random_steps(env, frame, RANDOM_STEPS_TRYES);
+	add_random_steps(env, frame, RANDOM_STEPS_TRYES, player);
 }
 
 void print_steps(fframe* frame) {

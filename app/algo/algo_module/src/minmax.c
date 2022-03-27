@@ -2,7 +2,7 @@
 #include "algo.h"
 
 
-int** direction = {
+int direction[8][2] = {
 	{1, 0},
 	{1, 1},
 	{0, 1},
@@ -14,7 +14,7 @@ int** direction = {
 };
 
 
-static void create_step(g_env* env, move_info* move, int is_player) {
+void create_step(g_env* env, move_info* move, int is_player) {
 	move->captured_quantity = 0;
 	int player_id = (is_player) ? PLAYER : ENEMY;
 	int enemy_id = (!is_player) ? PLAYER : ENEMY;
@@ -43,11 +43,11 @@ static void create_step(g_env* env, move_info* move, int is_player) {
 				move->captured_points[move->captured_quantity].x = move->p.x + x_diff * 2;
 				move->captured_points[move->captured_quantity].y = move->p.y + y_diff * 2;
 				move->captured_quantity += 1;
-				env->desk[move->p.x + x_diff * 2][move->p.y + y_diff * 2] == EMPTY;
+				env->desk[move->p.x + x_diff * 2][move->p.y + y_diff * 2] = EMPTY;
 				move->captured_points[move->captured_quantity].x = move->p.x + x_diff * 1;
 				move->captured_points[move->captured_quantity].y = move->p.y + y_diff * 1;
 				move->captured_quantity += 1;
-				env->desk[move->p.x + x_diff * 1][move->p.y + y_diff * 1] == EMPTY;
+				env->desk[move->p.x + x_diff * 1][move->p.y + y_diff * 1] = EMPTY;
 			}
 		}
 	}

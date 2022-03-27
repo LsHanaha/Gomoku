@@ -36,7 +36,7 @@
 #define FREE_THREE 0x00010
 #define RESTRICTED_SQUARE 0x00100
 
-int** direction;
+extern int direction[8][2];
 
 typedef struct point {
 	unsigned char x;
@@ -79,6 +79,8 @@ int init_frame(fframe* frame, size_t size);
 
 void free_desk(unsigned char **desk);
 int minmax_start(g_env* env);
+
+void create_step(g_env* env, move_info* move, int is_player);
 
 //estimate
 // int is_game_finished(g_env* env, int is_maximizing_player);
