@@ -1,11 +1,7 @@
 
 #include "algo.h"
 
-static void* parse_args(struct game_env* env, PyObject* args) {
-
-	PyObject * list;
-	 if (!PyArg_ParseTuple(args, "O!bI", &PyList_Type, &list, &env->player, &env->deep))
-			return NULL;
+static void* create_map(struct game_env* env, PyObject* list) {
 	env->size = PyList_Size(list);
 	env->desk = (unsigned char**)calloc(env->size + 1, sizeof(unsigned char*));
 //	printf("read player: %u\n", env->player);
@@ -49,6 +45,21 @@ static void* parse_args(struct game_env* env, PyObject* args) {
 			}
 		}
   	}
+	return env;
+}
+
+
+static void* parse_args_get_moves(struct game_env* env, PyObject* args) {
+
+	PyObject * list;
+	// rules, player_capture, enemy_capture)
+	 if (!PyArg_ParseTuple(args, "O!bIiii", &PyList_Type, &list, &env->player, &env->deep,
+								&env->rules, &env->player_capture,	&env->enemy_capture))
+			return NULL;
+	if (!create_map(env, list)) {
+		return NULL;
+	}
+	
 	  //memory leaks? unref PyObjects?
 	return env;
 }
@@ -84,10 +95,8 @@ PyObject* create_python_answer(g_env* env) {
 }
 
 // Точка входа
-PyObject* get_moves(PyObject* self, PyObject* args) {
+PyObject* parse_args_get_moves(PyObject* self, PyObject* args) {
 	struct game_env env;
-	env.enemy_capture = 0;
-	env.player_capture = 0;
 	if (!parse_args(&env, args))
 		return NULL;
 	// print_desk(&env);
@@ -98,8 +107,85 @@ PyObject* get_moves(PyObject* self, PyObject* args) {
 	// return PyFloat_FromDouble(0.0);
 }
 
+PyObject* implement_move(PyObject* self, PyObject* args) {
+	struct game_env env;
+	int x;
+	int y;
+	unsigned char enemy_id;
+	PyObject* list
 
+	if (!PyArg_ParseTuple(args, "O!bbiii", &PyList_Type, &list, &env.player, &enemy_id,
+								&env.rules, &x, &y))
+		return NULL;
+	create_map(&env, list);
+	move_info move;
+	move.p.x = x;
+	move.p.y = y;
+	create_step(&env, &move, true);
+	for (Py_ssize_t i = 0; i < env->size; i++) {
+		PyObject* sublist = PyList_GetItem(list, i);
 
+		if (!PyList_Check(sublist)) {
+			PyErr_SetString(PyExc_TypeError, "List must contain lists");
+			free_desk(env->desk);
+			return NULL;
+		}
+		if (PyList_Size(sublist) != env->size) {
+			PyErr_SetString(PyExc_TypeError, "Desk should be square");
+			free_desk(env->desk);
+			return NULL;
+		}
+		for (Py_ssize_t j = 0; j < env->size; j++) {
+			PyList_SetItem(point, 0, x);
+			int point_value = 0;
+			if (env.desk[i][j] == EMPTY) {
+				point_value = 0;
+			} else if (env.desk[i][j] == PLAYER) {
+				point_value = env.player;
+			} else {
+				point_value = enemy_id;
+			}
+			PyObject* x = Py_BuildValue("i", point_value);
+			PyList_SetItem(sublist, j, x);
+		}
+  	}
+	// print_desk(&env);
+	// minmax_start(&env);
+
+	// return create_python_answer(&env);
+	return list;
+	// return PyFloat_FromDouble(0.0);
+}
+
+PyObject* is_victory(PyObject* self, PyObject* args) {
+	struct game_env env;
+	PyObject* list
+
+	if (!PyArg_ParseTuple(args, "O!bi", &PyList_Type, &list, &env.player,
+								&env.rules))
+		return NULL;
+	move_info move;
+	move.p.x = x;
+	move.p.y = y;
+	create_step(&env, &move, true);
+	
+	create_map(env, list);
+	int is_game_finished = 0;
+	double position_score = estimate_position(&env, &is_game_finished, PLAYER);
+	PyObject* ans;
+	if (!is_game_finished) {
+		return Py_BuildValue("i", 0);
+	} else if (position_score > 0) {
+		return Py_BuildValue("i", 1);
+	}
+	return Py_BuildValue("i", 2);
+	// print_desk(&env);
+	// minmax_start(&env);
+
+	// return create_python_answer(&env);
+	// return list;
+	// return PyFloat_FromDouble(0.0);
+}
 // array containing the module's methods' definitions
 // put here the methods to export
 // the array must end with a {NULL} struct
@@ -107,6 +193,8 @@ PyMethodDef module_methods[] =
 {
 		// {"c_fib", c_fib, METH_VARARGS, "Method description"},
 		{"get_moves", get_moves, METH_VARARGS, "get possibly good moves"},
+		{"implement_move", implement_move, METH_VARARGS, "get map after move"},
+		{"is_victory", is_victory, METH_VARARGS, "check is victory"},
 		{NULL} // this struct signals the end of the array
 };
 

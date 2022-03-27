@@ -2,25 +2,69 @@
 #include "algo.h"
 
 
+int** direction = {
+	{1, 0},
+	{1, 1},
+	{0, 1},
+	{-1, 1},
+	{-1, 0},
+	{-1, -1},
+	{0, -1},
+	{1, -1},
+};
 
 
 static void create_step(g_env* env, move_info* move, int is_player) {
-	move->is_capture = false;
+	move->captured_quantity = 0;
+	int player_id = (is_player) ? PLAYER : ENEMY;
+	int enemy_id = (!is_player) ? PLAYER : ENEMY;
 	// TODO: check capture and make it
 	// захват достаточно сделать только тут
 	assert(env->desk[move->p.x][move->p.y] == EMPTY);
 	if (is_player)
-		env->desk[move->p.x][move->p.y] = PLAYER;
+		env->desk[move->p.x][move->p.y] = player_id;
 	else
-		env->desk[move->p.x][move->p.y] = ENEMY;
+		env->desk[move->p.x][move->p.y] = player_id;
+	
+	if (!(env->rules & ALLOW_CAPTURE)) {
+		printf("Capture blocked\n");
+		return;
+	}
+
+	for (int i = 0; i < 8; ++i) {
+		int x_diff = direction[i][0];
+		int y_diff = direction[i][1];
+		if (move->p.x + x_diff * 3 >= 0 && move->p.x + x_diff * 3 < env->size &&
+				move->p.y + y_diff * 3 >= 0 && move->p.y + y_diff * 3 < env->size) {
+			if (env->desk[move->p.x + x_diff * 3][move->p.y + y_diff * 3] == player_id &&
+					env->desk[move->p.x + x_diff * 2][move->p.y + y_diff * 2] == enemy_id &&
+					env->desk[move->p.x + x_diff * 1][move->p.y + y_diff * 1] == enemy_id) 
+			{
+				move->captured_points[move->captured_quantity].x = move->p.x + x_diff * 2;
+				move->captured_points[move->captured_quantity].y = move->p.y + y_diff * 2;
+				move->captured_quantity += 1;
+				env->desk[move->p.x + x_diff * 2][move->p.y + y_diff * 2] == EMPTY;
+				move->captured_points[move->captured_quantity].x = move->p.x + x_diff * 1;
+				move->captured_points[move->captured_quantity].y = move->p.y + y_diff * 1;
+				move->captured_quantity += 1;
+				env->desk[move->p.x + x_diff * 1][move->p.y + y_diff * 1] == EMPTY;
+			}
+		}
+	}
+	if (move->captured_quantity > 0) {
+		if (is_player) {
+			env->player_capture += 1;
+		} else {
+			env->enemy_capture += 1;
+		}
+	}
 }
 
 static void reverse_step(g_env* env, move_info* move) {
 	env->desk[move->p.x][move->p.y] = EMPTY;
-	// if (move->is_capture) {
-		// env->desk[move->capture_1.x][move->capture_1.y] = ENEMY;
-		// env->desk[move->capture_2.x][move->capture_2.y] = ENEMY;
-	// }
+	for (int i = 0; i < move->captured_quantity; ++i) {
+		env->desk[move->captured_points[i].x][move->captured_points[i].y] = ENEMY;
+	}
 }
 
 
@@ -29,6 +73,13 @@ static void reverse_step(g_env* env, move_info* move) {
 static double minmax(g_env* env, fframe* frame, int deep, double alpha, double betta, int is_maximizing_player) {
 	int is_game_finished = 0;
 	double position_score = estimate_position(env, &is_game_finished, is_maximizing_player ? PLAYER : ENEMY);
+	if (env->player_capture >= 5) {
+		is_game_finished = 1;
+		position_score += 120000;
+	} else if (env->enemy_capture >= 5) {
+		is_game_finished = 1;
+		position_score -= 120000;
+	} 
 	if (is_game_finished) {
 		printf("is_finished: %d, position_score: %lf\n", is_game_finished, position_score);
 
@@ -41,7 +92,7 @@ static double minmax(g_env* env, fframe* frame, int deep, double alpha, double b
 
 	}
 		// return  is_maximizing_player ?  ;
-	fill_possibly_steps(env, frame);
+	fill_possibly_steps(env, frame, is_maximizing_player ? PLAYER : ENEMY);
 	if (!frame->moves_quantity) {
 		return position_score; //estimate_position(env);
 	}
@@ -55,6 +106,9 @@ static double minmax(g_env* env, fframe* frame, int deep, double alpha, double b
 			create_step(env, &move, is_maximizing_player);
 			// print_desk(env);
 			double estimate = minmax(env, frame + 1, deep - 1, alpha, betta, !is_maximizing_player);
+			if (move.captured_quantity > 0) {
+				estimate += 3000;
+			}
 			// steps_frames[0].estimate[i] = estimate;
 			reverse_step(env, &move);
 			alpha = MAX(estimate, alpha);
@@ -72,6 +126,9 @@ static double minmax(g_env* env, fframe* frame, int deep, double alpha, double b
 			create_step(env, &move, is_maximizing_player);
 			// print_desk(env);
 			double estimate = minmax(env, frame + 1, deep - 1, alpha, betta, !is_maximizing_player);
+			if (move.captured_quantity > 0) {
+				estimate -= 3000;
+			}
 			// steps_frames[0].estimate[i] = estimate;
 			reverse_step(env, &move);
 			betta = MIN(estimate, betta);
@@ -96,7 +153,7 @@ int minmax_start(g_env* env) {
 	if (init_frame(&env->first_frame, env->size))
 		return 1;
 	// Всегда рассматриваем соседние с поставленными камушками ходы, + 10 случайных позиций
-	fill_possibly_steps(env, &env->first_frame);
+	fill_possibly_steps(env, &env->first_frame, PLAYER);
 	
 	// print_steps(&env->first_frame);
 	// return 1;

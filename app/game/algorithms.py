@@ -9,6 +9,10 @@ import time
 from app.schemas import game_schemas
 
 
+ALLOW_CAPTURE = 0b00001
+FREE_THREE = 0b00010
+RESTRICTED_SQUARE = 0b00100
+
 
 async def _min_max(game: RobotGame) -> game_schemas.Point:
     # col = random.randint(0, 18)
@@ -16,12 +20,21 @@ async def _min_max(game: RobotGame) -> game_schemas.Point:
     # TODO place where I added your script
     start_time = time.time() * 1000
     # for line in game.field
+    rules = 0
+    if True:
+        rules |= ALLOW_CAPTURE
+    if True:
+        rules |= FREE_THREE
+    if True:
+        rules |= RESTRICTED_SQUARE
     pprint(game.field)
     depth = game.algorithm_depth
     # if sum(sum(game.field, [])) < 8:
     #     print("Start Game")
     #     depth = max(depth, 4)
-    moves = algo_module.get_moves(game.field, game.curr_player, depth)
+    player_capture = 0
+    enemy_capture = 0
+    moves = algo_module.get_moves(game.field, game.curr_player, depth, rules, player_capture, enemy_capture)
     game.last_robot_time = time.time() * 1000 - start_time
     debug = []
     print("---------")

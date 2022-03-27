@@ -32,6 +32,12 @@
 #define WIN_ESTIMATE 10000
 // #define MAX_DEEP 200
 
+#define ALLOW_CAPTURE 0x00001
+#define FREE_THREE 0x00010
+#define RESTRICTED_SQUARE 0x00100
+
+int** direction;
+
 typedef struct point {
 	unsigned char x;
 	unsigned char y;
@@ -51,6 +57,7 @@ typedef struct game_env {
 	unsigned int deep;
 	int player_capture;
 	int enemy_capture;
+	int rules;
 	fframe first_frame;
 } g_env;
 
@@ -60,9 +67,8 @@ typedef struct game_env {
 
 typedef struct s_move_info {
 	ppoint p;
-	int is_capture;
-	ppoint capture_1;
-	ppoint capture_2;
+	int captured_quantity;
+	ppoint captured_points[16];
 } move_info;
 
 // output 
@@ -83,6 +89,6 @@ fframe* create_frames(struct game_env* env);
 void free_frames(fframe* steps_frames);
 
 //steps
-void fill_possibly_steps(g_env* env, fframe* frame);
+void fill_possibly_steps(g_env* env, fframe* frame, int player);
 
 #endif
