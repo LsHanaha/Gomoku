@@ -114,10 +114,10 @@ PyObject* implement_move(PyObject* self, PyObject* args) {
 	int y;
 	unsigned char enemy_id;
 	PyObject* list;
-
 	if (!PyArg_ParseTuple(args, "O!bbiii", &PyList_Type, &list, &env.player, &enemy_id,
-								&env.rules, &x, &y))
+								&env.rules, &x, &y)) {
 		return NULL;
+	}
 	create_map(&env, list);
 	move_info move;
 	move.p.x = x;
@@ -148,13 +148,12 @@ PyObject* implement_move(PyObject* self, PyObject* args) {
 			PyObject* x = Py_BuildValue("i", point_value);
 			PyList_SetItem(sublist, j, x);
 		}
-  	}
-	// print_desk(&env);
-	// minmax_start(&env);
-
-	// return create_python_answer(&env);
-	return list;
-	// return PyFloat_FromDouble(0.0);
+  	} 
+	if (move.captured_quantity > 0) {
+		return Py_BuildValue("i", 1);
+	} else {
+		return Py_BuildValue("i", 0);
+	}
 }
 
 PyObject* is_step_allowed_py(PyObject* self, PyObject* args) {

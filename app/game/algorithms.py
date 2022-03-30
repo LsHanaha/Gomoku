@@ -23,8 +23,8 @@ async def _min_max(game: RobotGame) -> game_schemas.Point:
     rules = 0
     if True:
         rules |= ALLOW_CAPTURE
-    if True:
-        rules |= FREE_THREE
+    # if True:
+    #     rules |= FREE_THREE
     if True:
         rules |= RESTRICTED_SQUARE
     pprint(game.field)
@@ -49,23 +49,20 @@ async def _min_max(game: RobotGame) -> game_schemas.Point:
 
     for i in range(min(len(best_moves), 5)):
         debug.append(best_moves[i][1])
-    pprint(moves)
-    print("select: ", max_move)
-
-    print("---------\n\n")
+    
 
     # проверяем, что камень можно поставить сюда, согласно правилам:
     # if algo_module.is_step_allowed(game.field, game.curr_player, rules, max_move[0], max_move[1]):
-        # Ставим камень, если включен захват - убираем лишние камни с поля
-        # other_player = 1 if game.curr_player == 2 else 2
-        # algo_module.implement_move(game.field, game.curr_player, other_player, rules, max_move[0], max_move[1])
-        # PLAYER_WIN = 1
-        # ENEMY_WIN = 2
-        # victory_status = algo_module.is_victory(game.field, game.curr_player, rules)
-        # if victory_status == PLAYER_WIN:
-        #     print("Player win")
-        # elif victory_status == ENEMY_WIN:
-        #     print("ENEMY win")
+    #     # Ставим камень, если включен захват - убираем лишние камни с поля
+    #     other_player = 1 if game.curr_player == 2 else 2
+    #     algo_module.implement_move(game.field, game.curr_player, other_player, rules, max_move[0], max_move[1])
+    #     PLAYER_WIN = 1
+    #     ENEMY_WIN = 2
+    #     victory_status = algo_module.is_victory(game.field, game.curr_player, rules)
+    #     if victory_status == PLAYER_WIN:
+    #         print("Player win")
+    #     elif victory_status == ENEMY_WIN:
+    #         print("ENEMY win")
 
     game.debug_data = debug
     return game_schemas.Point(

@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from aioredis import Redis
 from uuid import UUID
 from copy import copy
-
+import algo_module
 from app.game.game_abc import HotSeatGameABC, RobotGameABC
 from app.schemas import game_schemas
 from app.errors import GomokuError
@@ -12,6 +12,9 @@ from app.game import game_redis
 from app.game.game_helpers import check_end_of_game
 
 
+ALLOW_CAPTURE = 0b00001
+FREE_THREE = 0b00010
+RESTRICTED_SQUARE = 0b00100
 class HotSeatGame(HotSeatGameABC):
     """
     This src is a set of rules, which will be called in game arena
@@ -76,10 +79,19 @@ class RobotGame(RobotGameABC):
         self.curr_player = 1 if self.curr_player == 2 else 2
 
     async def set_move(self, move: game_schemas.Point):
-        print(move)
         if self.field[move.row][move.col]:
             raise GomokuError(f"This point is not empty!")
-        self.field[move.row][move.col] = self.curr_player
+        rules = int(7)
+        # if True:
+        #     rules |= ALLOW_CAPTURE
+        # if True:
+        #     rules |= FREE_THREE
+        # if True:
+        #     rules |= RESTRICTED_SQUARE
+        enemy = int(1 if self.curr_player == 2 else 2)
+        is_capture = algo_module.implement_move(self.field, self.curr_player, enemy, rules, move.row, move.col)
+        # if is_capture:
+        #     Добавить баллы за захват
         self.count_of_turns += 1
 
     async def check_end_of_game(self, move: game_schemas.Point):

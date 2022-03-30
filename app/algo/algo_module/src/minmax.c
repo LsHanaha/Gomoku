@@ -13,6 +13,30 @@ int direction[8][2] = {
 	{1, -1},
 };
 
+// Первый захват: 800
+// Второй захват: 935
+// Третий захват: 1300
+// Четвертый захват: 1600
+// Четвертый захват: 1800
+// Пятый захват:  180000
+double get_chatch_score(int n) {
+	switch (n) {
+		case 0:
+			return 800;
+		case 1:
+			return 935;
+		case 2:
+			return 1300;
+		case 3:
+			return 1800;
+		case 4:
+			return 180000;
+		default:
+			return 180000;
+	}
+
+}
+
 
 void create_step(g_env* env, move_info* move, int is_player) {
 	move->captured_quantity = 0;
@@ -27,7 +51,7 @@ void create_step(g_env* env, move_info* move, int is_player) {
 		env->desk[move->p.x][move->p.y] = player_id;
 	
 	if (!(env->rules & ALLOW_CAPTURE)) {
-		printf("Capture blocked\n");
+		// printf("Capture blocked\n");
 		return;
 	}
 
@@ -52,7 +76,6 @@ void create_step(g_env* env, move_info* move, int is_player) {
 		}
 	}
 	if (move->captured_quantity > 0) {
-		printf("Find Capture!! x: %d, y: %d \n", move->p.x, move->p.y);
 		if (is_player) {
 			env->player_capture += 1;
 		} else {
@@ -72,6 +95,7 @@ static void reverse_step(g_env* env, move_info* move) {
 
 
 static double minmax(g_env* env, fframe* frame, int deep, double alpha, double betta, int is_maximizing_player) {
+	// printf("Deep: %d\n", deep);
 	int is_game_finished = 0;
 	double position_score = estimate_position(env, &is_game_finished, is_maximizing_player ? PLAYER : ENEMY);
 	if (env->player_capture >= 5) {
@@ -82,7 +106,7 @@ static double minmax(g_env* env, fframe* frame, int deep, double alpha, double b
 		position_score -= 120000;
 	} 
 	if (is_game_finished) {
-		printf("is_finished: %d, position_score: %lf\n", is_game_finished, position_score);
+		// printf("is_finished: %d, position_score: %lf\n", is_game_finished, position_score);
 
 	}
 	if (deep <= 0 || is_game_finished) {
@@ -108,9 +132,8 @@ static double minmax(g_env* env, fframe* frame, int deep, double alpha, double b
 			// print_desk(env);
 			double estimate = minmax(env, frame + 1, deep - 1, alpha, betta, !is_maximizing_player);
 			if (move.captured_quantity > 0) {
-				estimate += 4000;
+				estimate += get_chatch_score(env->player_capture);
 			}
-			// steps_frames[0].estimate[i] = estimate;
 			reverse_step(env, &move);
 			alpha = MAX(estimate, alpha);
 			max_estimate = MAX(max_estimate, estimate);
@@ -128,9 +151,8 @@ static double minmax(g_env* env, fframe* frame, int deep, double alpha, double b
 			// print_desk(env);
 			double estimate = minmax(env, frame + 1, deep - 1, alpha, betta, !is_maximizing_player);
 			if (move.captured_quantity > 0) {
-				estimate -= 4000;
+				estimate -= get_chatch_score(env->enemy_capture);
 			}
-			// steps_frames[0].estimate[i] = estimate;
 			reverse_step(env, &move);
 			betta = MIN(estimate, betta);
 			min_estimate = MIN(min_estimate, estimate);
@@ -169,18 +191,18 @@ int minmax_start(g_env* env) {
 		create_step(env, &move, true);
 		// print_desk(env);
 		double estimate = minmax(env, steps_frames + 1, env->deep - 1, alpha, betta, false);
-		printf("HERE \n");
+		// printf("HERE \n");
 		if (move.captured_quantity > 0) {
-				estimate += 4000;
-				printf("Print desk\n");
-				print_desk(env);
+				estimate += get_chatch_score(env->player_capture);
+				// printf("Print desk\n");
+				// print_desk(env);
 		}
 		// printf("get estimate: %f\n", estimate);
 		env->first_frame.estimate[i] = estimate;
 		alpha = MAX(estimate, alpha);
 		reverse_step(env, &move);
 	}
-	print_steps(&env->first_frame);
+	// print_steps(&env->first_frame);
 	return 0;
 }
 

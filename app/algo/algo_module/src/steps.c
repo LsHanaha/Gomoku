@@ -1,5 +1,6 @@
 
 #include "algo.h"
+#include <stdlib.h>
 
 
 // free-three:
@@ -172,6 +173,50 @@ static void add_random_steps(g_env* env, fframe* frame, int attempt, int player)
 	}
 }
 
+double estimate_step(g_env* env, ppoint* point, int player) {
+	double score = 0.0;
+	int x = point->x;
+	int y = point->y;
+
+	for (int i = 0; i < 8; ++i) {
+		double line = 0.0;
+		int x_direction = direction[i][0];
+		int y_direction = direction[i][1];
+		while (true) {
+			x += x_direction;
+			y += y_direction;
+			if (x >= 0 && x < env->size && y >= 0 && y < env->size &&
+												env->desk[x][y] == player)
+			{
+				++line;
+				line = line * 2;
+			} else {
+				break;
+			}
+
+		}
+		score += line;
+	}
+	return score;
+}
+
+int compare_steps(const void *p_1, const void *p_2) {
+	const ppoint* p1 = (const ppoint*)p_1;
+	const ppoint* p2 = (const ppoint*)p_2;
+	if (p1->score < p2->score)
+        return 1;  // Return -1 if you want ascending, 1 if you want descending order. 
+    else if (p1->score > p2->score)
+        return -1;   // Return 1 if you want ascending, -1 if you want descending order.
+    return 0;
+}
+
+void sort_steps(g_env* env, fframe* frame, int player) {
+	for (int i = 0; i < frame->moves_quantity; ++i) {
+		frame->possibly_moves[i].score = estimate_step(env, &frame->possibly_moves[i], player);
+	}
+	qsort(frame->possibly_moves, frame->moves_quantity, sizeof(ppoint), compare_steps);
+}
+
 void fill_possibly_steps(g_env* env, fframe* frame, int player) {
 	size_t current_step = 0;
 	for (ssize_t i = 0; i < env->size; ++i) {
@@ -199,6 +244,7 @@ void fill_possibly_steps(g_env* env, fframe* frame, int player) {
 		}
 	}
 	frame->moves_quantity = current_step;
+	sort_steps(env, frame, player);
 	add_random_steps(env, frame, RANDOM_STEPS_TRYES, player);
 }
 

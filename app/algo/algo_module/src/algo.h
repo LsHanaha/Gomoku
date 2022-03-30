@@ -41,6 +41,7 @@ extern int direction[8][2];
 typedef struct point {
 	unsigned char x;
 	unsigned char y;
+	double score;
 } ppoint;
 
 
