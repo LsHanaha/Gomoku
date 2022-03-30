@@ -22,15 +22,15 @@ int direction[8][2] = {
 double get_chatch_score(int n) {
 	switch (n) {
 		case 0:
-			return 800;
+			return 40;
 		case 1:
-			return 935;
+			return 40;
 		case 2:
-			return 1300;
+			return 40;
 		case 3:
-			return 1800;
+			return 40;
 		case 4:
-			return 180000;
+			return 1700;
 		default:
 			return 180000;
 	}
