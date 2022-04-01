@@ -4,7 +4,7 @@
 
 #define PY_SSIZE_T_CLEAN
 // The actual Python API
-#include <Python.h>
+// #include <Python.h>
 
 
 
@@ -27,14 +27,21 @@
 #define false 0
 #define true 1
 #define MAX_CAPTURES 5
-#define RANDOM_STEPS_TRYES 10
+#define RANDOM_STEPS_TRYES 1
 #define WIN_LENGTH 5
 #define WIN_ESTIMATE 10000
 // #define MAX_DEEP 200
 
+#define ALLOW_CAPTURE 0x00001
+#define FREE_THREE 0x00010
+#define RESTRICTED_SQUARE 0x00100
+
+extern int direction[8][2];
+
 typedef struct point {
 	unsigned char x;
 	unsigned char y;
+	double score;
 } ppoint;
 
 
@@ -51,6 +58,7 @@ typedef struct game_env {
 	unsigned int deep;
 	int player_capture;
 	int enemy_capture;
+	int rules;
 	fframe first_frame;
 } g_env;
 
@@ -60,29 +68,31 @@ typedef struct game_env {
 
 typedef struct s_move_info {
 	ppoint p;
-	int is_capture;
-	ppoint capture_1;
-	ppoint capture_2;
+	int captured_quantity;
+	ppoint captured_points[16];
 } move_info;
 
 // output 
 void print_steps(fframe* frame);
 void print_desk(struct game_env* env);
 
-int init_frame(fframe* frame, int size);
+int init_frame(fframe* frame, size_t size);
 
 void free_desk(unsigned char **desk);
 int minmax_start(g_env* env);
 
+void create_step(g_env* env, move_info* move, int is_player);
+
 //estimate
-int is_game_finished(g_env* env, int is_maximizing_player);
-double estimate_position(g_env* env);
+// int is_game_finished(g_env* env, int is_maximizing_player);
+double estimate_position(g_env* env, int* is_game_finished, int player);
 
 //minmax_init
 fframe* create_frames(struct game_env* env);
 void free_frames(fframe* steps_frames);
 
 //steps
-void fill_possibly_steps(g_env* env, fframe* frame);
+void fill_possibly_steps(g_env* env, fframe* frame, int player);
+int is_step_allowed(g_env *env, int x, int y, int player);
 
 #endif

@@ -11,7 +11,7 @@ void free_frames(fframe* steps_frames) {
 	free(to_delete);
 }
 
-int init_frame(fframe* frame, int size) {
+int init_frame(fframe* frame, size_t size) {
 	frame->possibly_moves = (ppoint*)calloc(size * size, sizeof(ppoint));
 	frame->estimate = (double*)calloc(size * size, sizeof(double));
 	// printf("ALLOCATED SIZE: %i\n", size * size);
