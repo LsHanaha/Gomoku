@@ -48,7 +48,6 @@ export const Game = (props) => {
   useEffect(() => {
     const query = async () => {
       try {
-        // debugger;
         const result = await postQueries(GAME_ENDPOINTS.gameStart,
           {uuid: localStorage.getItem(GAME_LOCAL_STORAGE.uuid)});
         if (!result.data) {
@@ -75,9 +74,11 @@ export const Game = (props) => {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  const placeDebug = async (debugData) => {
+  const placeDebug = async (debugData, rowId, colId) => {
     const startField = field;
     let tempVal;
+    startField[rowId][colId] = 1;
+    setField(startField);
 
     for (let move of debugData) {
       let tempField = [...startField];
@@ -89,9 +90,9 @@ export const Game = (props) => {
     }
   }
 
-  const continueGame = async (data) => {
+  const continueGame = async (data, rowId, colId) => {
     if (data.debug)
-      await placeDebug(data.debug);
+      await placeDebug(data.debug, rowId, colId);
     await setCurrentPlayer(data.current_player);
     await setCurrentTurn(data.count_of_turns)
     await setDuration(data.robot_time || 0);
@@ -100,7 +101,6 @@ export const Game = (props) => {
   }
 
   const endGame = async (data) => {
-    console.log(data);
     setGameEndData(data);
     localStorage.removeItem(GAME_LOCAL_STORAGE.uuid);
     setTimeout(() => {
@@ -111,14 +111,13 @@ export const Game = (props) => {
 
   const placeStone = async (rowId, colId) => {
     try {
-      // debugger;
       const response = await postQueries(GAME_ENDPOINTS.move, {
         row: rowId,
         col: colId,
         uuid: localStorage.getItem(GAME_LOCAL_STORAGE.uuid)
       });
       if (response.data.game_continue)
-        await continueGame(response.data.game_continue)
+        await continueGame(response.data.game_continue, rowId, colId)
       if (response.data.game_end)
         await endGame(response.data.game_end)
 
@@ -140,7 +139,6 @@ export const Game = (props) => {
         await endGame(response.data.game_end)
 
     } catch (error) {
-      debugger;
       setPortalOpen(true);
       setPortalText(JSON.parse(error.message).detail || error.message);
     }

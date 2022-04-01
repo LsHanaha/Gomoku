@@ -6,7 +6,6 @@ import styles from './board.module.css';
 
 
 export const Board = (props) => {
-  console.log("board");
   const createRow = (row, rowId) => {
 
     const res = row.map((cell, colId) => {
