@@ -145,12 +145,12 @@ int is_step_allowed(g_env *env, int x, int y, int player) {
 			int is_free_three = check_free_three(env, x, y, x_direction, y_direction, player) || 
 								check_free_three(env, x, y, -x_direction, -y_direction, player);
 			if (is_free_three) {
-				printf("Find Free-Three! step x: %d, y: %d\n", x, y);
+				// printf("Find Free-Three! step x: %d, y: %d\n", x, y);
 				++free_three_counter;
 			}
 		}
 		if (free_three_counter > 1) {
-			printf("Block by  Free-Three rule. step x: %d, y: %d\n", x, y);
+			// printf("Block by  Free-Three rule. step x: %d, y: %d\n", x, y);
 			return false;
 		}
 	}

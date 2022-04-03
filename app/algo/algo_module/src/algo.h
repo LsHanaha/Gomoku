@@ -32,9 +32,9 @@
 #define WIN_ESTIMATE 10000
 // #define MAX_DEEP 200
 
-#define ALLOW_CAPTURE 0x00001
-#define FREE_THREE 0x00010
-#define RESTRICTED_SQUARE 0x00100
+#define ALLOW_CAPTURE 0b00001
+#define FREE_THREE 0b00010
+#define RESTRICTED_SQUARE 0b00100
 
 extern int direction[8][2];
 
