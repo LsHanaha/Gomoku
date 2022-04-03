@@ -1,8 +1,7 @@
 from sqlalchemy.orm import Session
 from aioredis import Redis
-from uuid import UUID
 from copy import copy
-import algo_module
+
 from app.game.game_abc import HotSeatGameABC, RobotGameABC
 from app.schemas import game_schemas
 from app.errors import GomokuError
@@ -10,11 +9,14 @@ from app.errors import GomokuError
 from app.crud.game import update_queries, post_queries, get_queries
 from app.game import game_redis
 from app.game.game_helpers import check_end_of_game
+import algo_module
 
 
 ALLOW_CAPTURE = 0b00001
 FREE_THREE = 0b00010
 RESTRICTED_SQUARE = 0b00100
+
+
 class HotSeatGame(HotSeatGameABC):
     """
     This src is a set of rules, which will be called in game arena
@@ -26,15 +28,23 @@ class HotSeatGame(HotSeatGameABC):
     async def change_player(self) -> None:
         self.curr_player = 1 if self.curr_player == 2 else 2
 
-    async def set_move(self, point: game_schemas.Point):
-        if self.field[point.row][point.col]:
+    async def set_move(self, move: game_schemas.Point):
+        if self.field[move.row][move.col]:
             raise GomokuError(f"This point is not empty!")
-        self.field[point.row][point.col] = self.curr_player
+        enemy = 1 if self.curr_player == 2 else 2
+        capture_score = algo_module.implement_move(self.field, self.curr_player, enemy, self.rule_status_code,
+                                                   move.row, move.col)
+        if capture_score:
+            self.score[self.curr_player - 1] += capture_score
         self.count_of_turns += 1
 
     async def check_end_of_game(self, move: game_schemas.Point):
-        sequences = await check_end_of_game(self, move)
-        status = any(i >= 5 for i in sequences.lengths)
+        end_game_data = await check_end_of_game(self, move)
+        if isinstance(end_game_data, int):
+            if end_game_data:
+                self.has_winner = True
+            return
+        status = any(i >= 5 for i in end_game_data.lengths)
         if status:
             self.has_winner = True
 
@@ -44,7 +54,7 @@ class HotSeatGame(HotSeatGameABC):
             post_queries.add_game_in_history({
                 'game_id': game.id,
                 'winner': f"Player {self.curr_player}",
-                'score': f"{self.score[0]} : {self.score[1]}",
+                'score': f"{self.score[0] * 2} : {self.score[1] * 2}",
                 'count_of_turns': self.count_of_turns
             }, db)
         update_queries.update_game_status(self.uuid, db)
@@ -54,20 +64,28 @@ class HotSeatGame(HotSeatGameABC):
         response = game_schemas.GameContinue(
             map=self.field,
             debug=None,
-            score=self.score,
+            score=[val * 2 for val in self.score],
             robot_time=None,
             count_of_turns=self.count_of_turns,
             current_player=self.curr_player
         )
         return response
 
-    async def check_rule(self, move: game_schemas.Point, after_move=False) -> bool:
+    async def check_rule(self, game: HotSeatGameABC, move: game_schemas.Point, after_move=False) -> bool:
         pass
 
     @staticmethod
     async def run_algorithm():
         # dummy method to handle arena sequence
         return None
+
+    async def generate_rule_status_code(self):
+        status_code = 0
+        if self.rule_name == 'Choice of redaction':
+            status_code |= ALLOW_CAPTURE
+            status_code |= FREE_THREE
+
+        self.rule_status_code = status_code
 
 
 class RobotGame(RobotGameABC):
@@ -81,22 +99,21 @@ class RobotGame(RobotGameABC):
     async def set_move(self, move: game_schemas.Point):
         if self.field[move.row][move.col]:
             raise GomokuError(f"This point is not empty!")
-        rules = int(7)
-        # if True:
-        #     rules |= ALLOW_CAPTURE
-        # if True:
-        #     rules |= FREE_THREE
-        # if True:
-        #     rules |= RESTRICTED_SQUARE
-        enemy = int(1 if self.curr_player == 2 else 2)
-        is_capture = algo_module.implement_move(self.field, self.curr_player, enemy, rules, move.row, move.col)
-        # if is_capture:
-        #     Добавить баллы за захват
+
+        enemy = 1 if self.curr_player == 2 else 2
+        capture_score = algo_module.implement_move(self.field, self.curr_player, enemy, self.rule_status_code,
+                                                   move.row, move.col)
+        if capture_score:
+            self.score[self.curr_player - 1] += capture_score
         self.count_of_turns += 1
 
     async def check_end_of_game(self, move: game_schemas.Point):
-        sequences = await check_end_of_game(self, move)
-        status = any(i >= 5 for i in sequences.lengths)
+        end_game_data = await check_end_of_game(self, move)
+        if isinstance(end_game_data, int):
+            if end_game_data:
+                self.has_winner = True
+            return
+        status = any(i >= 5 for i in end_game_data.lengths)
         if status:
             self.has_winner = True
 
@@ -106,7 +123,7 @@ class RobotGame(RobotGameABC):
             post_queries.add_game_in_history({
                 'game_id': game.id,
                 'winner': f"Player {self.curr_player}",
-                'score': f"{self.score[0]} : {self.score[1]}",
+                'score': f"{self.score[0] * 2} : {self.score[1] * 2}",
                 'count_of_turns': self.count_of_turns
             }, db)
         update_queries.update_game_status(self.uuid, db)
@@ -116,7 +133,7 @@ class RobotGame(RobotGameABC):
         response = game_schemas.GameContinue(
             map=self.field,
             debug=copy(self.debug_data),
-            score=self.score,
+            score=[val * 2 for val in self.score],
             robot_time=copy(self.last_robot_time),
             count_of_turns=self.count_of_turns,
             current_player=self.curr_player
@@ -129,5 +146,13 @@ class RobotGame(RobotGameABC):
         # TODO remove mock
         pass
 
-    async def check_rule(self, move: game_schemas.Point, after_move=False):
+    async def check_rule(self, game: RobotGameABC, move: game_schemas.Point, after_move=False):
         pass
+
+    async def generate_rule_status_code(self):
+        status_code = 0
+        if self.rule_name == 'Choice of redaction':
+            status_code |= ALLOW_CAPTURE
+            status_code |= FREE_THREE
+
+        self.rule_status_code = status_code

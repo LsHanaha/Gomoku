@@ -77,8 +77,10 @@ export const Game = (props) => {
   const placeDebug = async (debugData, rowId, colId) => {
     const startField = field;
     let tempVal;
-    startField[rowId][colId] = 1;
-    setField(startField);
+    if (rowId && colId) {
+      startField[rowId][colId] = 1;
+      setField(startField);
+    }
 
     for (let move of debugData) {
       let tempField = [...startField];
@@ -122,7 +124,6 @@ export const Game = (props) => {
         await endGame(response.data.game_end)
 
     } catch (error) {
-      debugger;
       setPortalOpen(true);
       setPortalText(JSON.parse(error.message).detail || error.message);
     }

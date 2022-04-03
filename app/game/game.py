@@ -72,7 +72,12 @@ class NewGameHotSeat(_CommonMethods):
         inst = self._game_instance(rule=rule.name, uuid=game_data.uuid, dice_colors=settings.dice_colors,
                                    field_type=settings.field_map)
         await self._set_rule(inst)
+        await self._initialize_rule_status_code(inst)
         return inst
+
+    @staticmethod
+    async def _initialize_rule_status_code(inst: game_interfaces.HotSeatGame):
+        await inst.generate_rule_status_code()
 
 
 class NewGameRobot(_CommonMethods):
@@ -112,6 +117,7 @@ class NewGameRobot(_CommonMethods):
                                    is_debug=settings.is_debug)
         await self._set_rule(inst)
         await self._set_algorithm(inst)
+        await self._initialize_rule_status_code(inst)
         return inst
 
     @staticmethod
@@ -121,6 +127,10 @@ class NewGameRobot(_CommonMethods):
         if algo_method is None:
             raise KeyError(f"Rule {algo_name} not identified. Call developers")
         instance.run_algorithm = algo_method
+
+    @staticmethod
+    async def _initialize_rule_status_code(inst: game_interfaces.RobotGame):
+        await inst.generate_rule_status_code()
 
 
 class OldGame:

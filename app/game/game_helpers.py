@@ -3,6 +3,7 @@ import numpy as np
 
 from app.schemas import game_schemas
 from app.game import game_abc
+import algo_module
 
 
 _OPPONENT = {1: 2, 2: 1}
@@ -10,7 +11,12 @@ _OPPONENT = {1: 2, 2: 1}
 
 async def check_end_of_game(game: Union[game_abc._GameABC], move: game_schemas.Point,
                             check_surrounded=False) \
-        -> Optional[game_schemas.StonesInRow]:
+        -> Optional[Union[game_schemas.StonesInRow, int]]:
+    if game.rule_name != 'Karo':
+        victory_status = algo_module.is_victory(game.field, game.curr_player, game.rule_status_code)
+        if game.score[game.curr_player - 1] >= 5:
+            return 1
+        return victory_status
 
     field = game.field
     up_down = [row[move.col] for row in field]

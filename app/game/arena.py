@@ -18,8 +18,6 @@ class Arena:
                   game: Union[game_interfaces.RobotGame, game_interfaces.HotSeatGame],
                   move: game_schemas.Point) -> game_schemas.GameResponse:
 
-        # clear response field in the game
-
         await self._check_rule(game, move)
         await self._set_move(game, move)
         winner_checked = await self._check_rule(game, move, after_move=True)
@@ -33,10 +31,11 @@ class Arena:
         await self._store_game(game)
         return await self._make_response(game)
 
-    async def _check_rule(self, game: Union[game_interfaces.RobotGame, game_interfaces.HotSeatGame],
+    async def _check_rule(self,
+                          game: Union[game_interfaces.RobotGame, game_interfaces.HotSeatGame],
                           move: game_schemas.Point,
                           after_move=False) -> None:
-        winner_checked = await game.check_rule(move, after_move)
+        winner_checked = await game.check_rule(game, move, after_move)
         return winner_checked
 
     @staticmethod
@@ -57,7 +56,8 @@ class Arena:
     @staticmethod
     async def _end_of_game(game: Union[game_interfaces.RobotGame, game_interfaces.HotSeatGame]) \
             -> game_schemas.GameResponse:
-        end_game = game_schemas.GameEnd(winner=game.curr_player, score=game.score, count_of_turns=game.count_of_turns)
+        end_game = game_schemas.GameEnd(winner=game.curr_player, score=[val * 2 for val in game.score],
+                                        count_of_turns=game.count_of_turns)
         return game_schemas.GameResponse(game_end=end_game, game_continue=None)
 
     async def run_algorithm(self, game: Union[game_interfaces.RobotGame,

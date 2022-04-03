@@ -42,9 +42,9 @@ async def robot_help(game: Union[RobotGame, HotSeatGame], db: Session, redis: Re
     if game.robot_help[game.curr_player] <= 0:
         raise GomokuError("No helps left. Each user have only 3 shots.")
     while True:
-        algo_move = await algorithms.algorithms['min-max'](game, depth=3)
+        algo_move = await algorithms.algorithms['min-max'](game, depth_force=5)
         try:
-            await game.check_rule(algo_move)
+            await game.check_rule(game, algo_move)
             break
         except GomokuError:
             pass

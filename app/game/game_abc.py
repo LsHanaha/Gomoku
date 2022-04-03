@@ -21,6 +21,7 @@ class _GameABC(abc.ABC):
         self.has_winner = False
         self.score = [0, 0]  # имеет отношение только к конкретному правилу
         self.robot_help = {1: _COUNT_OF_HELPS, 2: _COUNT_OF_HELPS}
+        self.rule_status_code = 0
 
     @abc.abstractmethod
     async def change_player(self):
@@ -43,7 +44,7 @@ class _GameABC(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def check_rule(self, move: game_schemas.Point, after_move=False):
+    async def check_rule(self, game, move: game_schemas.Point, after_move=False):
         pass
 
     @staticmethod

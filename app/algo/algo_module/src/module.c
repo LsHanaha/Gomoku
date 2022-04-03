@@ -148,12 +148,10 @@ PyObject* implement_move(PyObject* self, PyObject* args) {
 			PyObject* x = Py_BuildValue("i", point_value);
 			PyList_SetItem(sublist, j, x);
 		}
-  	} 
-	if (move.captured_quantity > 0) {
-		return Py_BuildValue("i", 1);
-	} else {
-		return Py_BuildValue("i", 0);
-	}
+  	}
+
+    // возвращает количество захваченных шашек
+    return Py_BuildValue("i", move.captured_quantity / 2);
 }
 
 PyObject* is_step_allowed_py(PyObject* self, PyObject* args) {
