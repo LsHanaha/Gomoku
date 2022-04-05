@@ -1,14 +1,13 @@
 #include "algo.h"
 
-void free_frames(fframe* steps_frames) {
-	fframe* to_delete = steps_frames;
-	while (steps_frames) {
-		free(steps_frames->possibly_moves);
-		++steps_frames;
+void free_frames(fframe* steps_frames, struct game_env* env) {
+	for (ssize_t i = 0; i < env->deep + 1; ++i) {
+		fframe* to_delete = steps_frames + i;
+		free(to_delete->possibly_moves);
+		if (to_delete->estimate)
+			free(to_delete->estimate);
 	}
-	if (steps_frames->estimate)
-		free(steps_frames->estimate);
-	free(to_delete);
+	free(steps_frames);
 }
 
 int init_frame(fframe* frame, size_t size) {
@@ -29,7 +28,7 @@ fframe* create_frames(struct game_env* env) {
 		return NULL;
 	for (ssize_t i = 0; i < env->deep + 1; ++i) {
 		if (init_frame(steps_frames + i, env->size)) {
-			free_frames(steps_frames);
+			free_frames(steps_frames, env);
 			return NULL;
 		}
 	}

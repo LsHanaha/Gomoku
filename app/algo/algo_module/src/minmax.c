@@ -204,6 +204,7 @@ int minmax_start(g_env* env) {
 		reverse_step(env, &move, true);
 	}
 	// print_steps(&env->first_frame);
+	free_frames(steps_frames, env);
 	return 0;
 }
 
