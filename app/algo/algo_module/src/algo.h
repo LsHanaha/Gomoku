@@ -89,7 +89,7 @@ double estimate_position(g_env* env, int* is_game_finished, int player);
 
 //minmax_init
 fframe* create_frames(struct game_env* env);
-void free_frames(fframe* steps_frames);
+void free_frames(fframe* steps_frames, g_env* env);
 
 //steps
 void fill_possibly_steps(g_env* env, fframe* frame, int player);

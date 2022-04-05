@@ -49,6 +49,13 @@ static void* create_map(struct game_env* env, PyObject* list) {
 	return env;
 }
 
+static void free_map(struct game_env* env) {
+	for (ssize_t i = 0; i < env->size; i++) {
+		free(env->desk[i]);
+	}
+	free(env->desk);
+	env->desk = 0;
+}
 
 static void* parse_args_get_moves(struct game_env* env, PyObject* args) {
 
@@ -103,9 +110,9 @@ PyObject* get_moves(PyObject* self, PyObject* args) {
 	// print_desk(&env);
 	minmax_start(&env);
 
-	return create_python_answer(&env);
-
-	// return PyFloat_FromDouble(0.0);
+	PyObject* ans = create_python_answer(&env);
+	free_map(&env);
+	return ans;
 }
 
 PyObject* implement_move(PyObject* self, PyObject* args) {
@@ -149,7 +156,7 @@ PyObject* implement_move(PyObject* self, PyObject* args) {
 			PyList_SetItem(sublist, j, x);
 		}
   	}
-
+	free_desk(env.desk);
     // возвращает количество захваченных шашек
     return Py_BuildValue("i", move.captured_quantity / 2);
 }
@@ -164,10 +171,11 @@ PyObject* is_step_allowed_py(PyObject* self, PyObject* args) {
 		return NULL;
 	
 	create_map(&env, list);
-	int is_game_finished = 0;
 	if (is_step_allowed(&env, x, y, PLAYER)) {
+		free_desk(env.desk);
 		return Py_BuildValue("i", 1);
 	} else {
+		free_desk(env.desk);
 		return Py_BuildValue("i", 0);
 	}
 }
@@ -184,6 +192,7 @@ PyObject* is_victory(PyObject* self, PyObject* args) {
 	create_map(&env, list);
 	int is_game_finished = 0;
 	double position_score = estimate_position(&env, &is_game_finished, PLAYER);
+	free_desk(env.desk);
 	if (!is_game_finished) {
 		return Py_BuildValue("i", EMPTY);
 	} else if (position_score > 0) {

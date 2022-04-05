@@ -84,10 +84,11 @@ void create_step(g_env* env, move_info* move, int is_player) {
 	}
 }
 
-static void reverse_step(g_env* env, move_info* move) {
+static void reverse_step(g_env* env, move_info* move, int is_player) {
+	int enemy_id = (!is_player) ? PLAYER : ENEMY;
 	env->desk[move->p.x][move->p.y] = EMPTY;
 	for (int i = 0; i < move->captured_quantity; ++i) {
-		env->desk[move->captured_points[i].x][move->captured_points[i].y] = ENEMY;
+		env->desk[move->captured_points[i].x][move->captured_points[i].y] = enemy_id;
 	}
 }
 
@@ -123,7 +124,7 @@ static double minmax(g_env* env, fframe* frame, int deep, double alpha, double b
 	}
 	move_info move;
 	if (is_maximizing_player) {
-		double max_estimate = -1.0 / 0.0;
+		// double max_estimate = -1.0 / 0.0;
 		for (int i=0; i < frame->moves_quantity; ++i) {
 			move.p = frame->possibly_moves[i];
 			// if (!is_step_available(env, &move))
@@ -134,15 +135,15 @@ static double minmax(g_env* env, fframe* frame, int deep, double alpha, double b
 			if (move.captured_quantity > 0) {
 				estimate += get_chatch_score(env->player_capture);
 			}
-			reverse_step(env, &move);
+			reverse_step(env, &move, is_maximizing_player);
 			alpha = MAX(estimate, alpha);
-			max_estimate = MAX(max_estimate, estimate);
-			if (betta < alpha) // ? <=
+			// max_estimate = MAX(max_estimate, estimate);
+			if (betta < alpha)  // ? <=
 				break;
 		}
-		return max_estimate;
+		return alpha;
 	} else {
-		double min_estimate = 1.0 / 0.0;
+		// double min_estimate = 1.0 / 0.0;
 		for (int i=0; i < frame->moves_quantity; ++i) {
 			move.p = frame->possibly_moves[i];
 			// if (!is_step_available(env, &move))
@@ -153,13 +154,13 @@ static double minmax(g_env* env, fframe* frame, int deep, double alpha, double b
 			if (move.captured_quantity > 0) {
 				estimate -= get_chatch_score(env->enemy_capture);
 			}
-			reverse_step(env, &move);
+			reverse_step(env, &move, is_maximizing_player);
 			betta = MIN(estimate, betta);
-			min_estimate = MIN(min_estimate, estimate);
+			// min_estimate = MIN(min_estimate, estimate);
 			if (betta < alpha) // ? <=
 				break;
 		}
-		return min_estimate;
+		return betta;
 	}
 	return 0.0;
 }
@@ -200,9 +201,10 @@ int minmax_start(g_env* env) {
 		// printf("get estimate: %f\n", estimate);
 		env->first_frame.estimate[i] = estimate;
 		alpha = MAX(estimate, alpha);
-		reverse_step(env, &move);
+		reverse_step(env, &move, true);
 	}
 	// print_steps(&env->first_frame);
+	free_frames(steps_frames, env);
 	return 0;
 }
 
