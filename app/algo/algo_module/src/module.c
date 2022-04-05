@@ -164,7 +164,6 @@ PyObject* is_step_allowed_py(PyObject* self, PyObject* args) {
 		return NULL;
 	
 	create_map(&env, list);
-	int is_game_finished = 0;
 	if (is_step_allowed(&env, x, y, PLAYER)) {
 		return Py_BuildValue("i", 1);
 	} else {

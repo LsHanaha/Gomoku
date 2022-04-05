@@ -119,7 +119,7 @@ static void estimate(e_counter* c) {
 	}
 
 	// Камни с краев считаем за свободное место, так же даем за них бонусные баллы (длина * 100 - свободное пространство * 40)
-	c->estimate += (c->prev_section_len + c->post_section_len) * 100 - (c->prev_section_free + c->post_section_free) * 40;
+	c->estimate += MAX((c->prev_section_len + c->post_section_len) * 100 - (c->prev_section_free + c->post_section_free) * 40, 0);
 
 	switch (c->section_len) {
 		case 4:
@@ -372,7 +372,7 @@ double estimate_position(g_env* env, int* five_in_row, int player) {
 	if (player == PLAYER) {
 		is_player_next_move = 1; // Только что закончил ход игрок. Сейчас ходит игрок, у него есть преимущество
 	}
-	return estimate_check_line(env, PLAYER, five_in_row, is_player_next_move) + 
+	double estimate = estimate_check_line(env, PLAYER, five_in_row, is_player_next_move) + 
 			estimate_check_column(env, PLAYER, five_in_row, is_player_next_move) + 
 			estimate_diagonale(env, PLAYER, five_in_row, is_player_next_move) + 
 			estimate_diagonale_2(env, PLAYER, five_in_row, is_player_next_move) - 
@@ -380,5 +380,6 @@ double estimate_position(g_env* env, int* five_in_row, int player) {
 			estimate_check_column(env, ENEMY, five_in_row, !is_player_next_move) -
 			estimate_diagonale(env, ENEMY, five_in_row, !is_player_next_move) -
 			estimate_diagonale_2(env, ENEMY, five_in_row, !is_player_next_move);
+	return estimate;
 }
 
