@@ -31,5 +31,4 @@ async def store_in_redis(game: Union[game_abc.RobotGameABC, game_abc.HotSeatGame
 
 
 async def delete_game(game: Union[game_abc.RobotGameABC, game_abc.HotSeatGameABC], redis: Redis):
-    status = await redis.hdel("game", str(game.uuid))
-    print(status)
+    await redis.hdel("game", str(game.uuid))

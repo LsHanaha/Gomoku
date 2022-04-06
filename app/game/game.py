@@ -108,6 +108,11 @@ class NewGameRobot(_CommonMethods):
                                         algorithm: game_schemas.Algorithm) \
             -> game_interfaces.RobotGame:
 
+        if rule.name == 'Choice of redaction':
+            difficulty.algorithm_depth *= 2
+            if difficulty.algorithm_depth >= 8:
+                difficulty.algorithm_depth = 11
+
         inst = self._game_instance(rule=rule.name,
                                    uuid=game_data.uuid,
                                    dice_colors=settings.dice_colors,

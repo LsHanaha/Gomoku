@@ -2,7 +2,6 @@ aiofiles==0.8.0
 aioredis==2.0.1
 aiosmtplib==1.1.6
 alembic==1.7.6
-algo-module @ file:///Users/lshanaha/Desktop/Prog/gomoku/app/algo/algo_module
 anyio==3.5.0
 asgiref==3.5.0
 async-timeout==4.0.2

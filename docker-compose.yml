@@ -38,41 +38,42 @@ services:
     env_file:
       - .env
 
-#  backend:
-#    env_file:
-#      - .env
-#    build: to_server
-#    container_name: backend_gomoku
-#    ports:
-#      - "8888:8888"
-#    restart: always
-#    volumes:
-#      - ./app/:/shurl/app
-#    links:
-#      - db
-#
-#    environment:
-#      POSTGRES_SERVICE_USER: ${POSTGRES_USER}
-#      POSTGRES_SERVICE_PASSWORD: ${POSTGRES_PASSWORD}
-#      POSTGRES_SERVICE_HOST: db
-#      POSTGRES_SERVICE_PORT: ${POSTGRES_PORT}
-#
-#      DEBUG: ${DEBUG}
-#
-#    command: bash -c "python start.py"
-#    depends_on:
-#      - db
-#      - redis
+  backend:
+    env_file:
+      - .env
+    build: .
+    container_name: backend_gomoku
+    ports:
+      - "8888:8888"
+    restart: always
+    volumes:
+      - ./app/:/gomoku/app
+    links:
+      - db
+      - redis
 
-#  nginx:
-#    restart: always
-#    build: ./nginx/
-#    container_name: ngingx_gomoku
-#    ports:
-#      - "80:80"
-#    volumes:
-#      - ./gomoku_front/build:/usr/src/app/static/
-#    links:
-#      - backend:backend
-#    depends_on:
-#      - backend
+    environment:
+      POSTGRES_SERVICE_USER: ${POSTGRES_USER}
+      POSTGRES_SERVICE_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_SERVICE_HOST: db
+      POSTGRES_SERVICE_PORT: ${POSTGRES_PORT}
+
+      DEBUG: ${DEBUG}
+
+    command: bash -c "python start.py"
+    depends_on:
+      - db
+      - redis
+
+  nginx:
+    restart: always
+    build: ./nginx/
+    container_name: nginx_gomoku
+    ports:
+      - "80:80"
+    volumes:
+      - ./gomoku_front/build:/usr/src/app/static/
+    links:
+      - backend:backend
+    depends_on:
+      - backend
