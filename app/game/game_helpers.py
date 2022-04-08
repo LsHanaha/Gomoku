@@ -21,8 +21,8 @@ async def check_end_of_game(game: Union[game_abc._GameABC], move: game_schemas.P
     field = game.field
     up_down = [row[move.col] for row in field]
     left_right = field[move.row]
-    up_left_down_right = np.diagonal(field, offset=(move.col - move.row))
-    down_left_up_right = np.diagonal(np.rot90(field), offset=(move.row - (game.field_size - 1 - move.col)))
+    up_left_down_right = create_diag(field, move.col, move.row)
+    down_left_up_right = create_reverse_diag(field, move.col, move.row)
 
     if check_surrounded:
         func = _helper_result_surrounded
@@ -31,8 +31,8 @@ async def check_end_of_game(game: Union[game_abc._GameABC], move: game_schemas.P
 
     up_count = await func(up_down, move.row, game.curr_player)
     left_count = await func(left_right, move.col, game.curr_player)
-    up_left_down_right_count = 1
-    down_left_up_right_count = 1
+    up_left_down_right_count = await func(up_left_down_right[0], up_left_down_right[1], game.curr_player)
+    down_left_up_right_count = await func(down_left_up_right[0], down_left_up_right[1], game.curr_player)
 
     return game_schemas.StonesInRow(lengths=[up_count, left_count,
                                              up_left_down_right_count, down_left_up_right_count])
@@ -79,6 +79,44 @@ async def _helper_result_surrounded(array: Union[List[int], np.array], start: in
     else:
         surrounded = False
     return count, surrounded
+
+
+def create_diag(field, start_x, start_y):
+    top_half = []
+    bottom_half = []
+
+    x, y = start_x, start_y
+    while x < 19 and y >= 0:
+        top_half.append(field[y][x])
+        x += 1
+        y -= 1
+
+    x, y = start_x - 1, start_y + 1
+    while x >= 0 and y < 19:
+        bottom_half.append(field[y][x])
+        x -= 1
+        y += 1
+
+    return [*bottom_half[::-1], *top_half], len(bottom_half)
+
+
+def create_reverse_diag(field, start_x, start_y):
+    top_half = []
+    bottom_half = []
+
+    x, y = start_x, start_y
+    while x >= 0 and y >= 0:
+        top_half.append(field[y][x])
+        x -= 1
+        y -= 1
+
+    x, y = start_x + 1, start_y + 1
+    while x < 19 and y < 19:
+        bottom_half.append(field[y][x])
+        x += 1
+        y += 1
+
+    return [*top_half[::-1], *bottom_half], len(top_half) - 1
 
 
 # if __name__ == '__main__':
