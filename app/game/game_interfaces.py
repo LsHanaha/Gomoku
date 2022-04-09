@@ -143,7 +143,6 @@ class RobotGame(RobotGameABC):
         return response
 
     async def run_algorithm(self, game) -> game_schemas.Point:
-        # TODO remove mock
         pass
 
     async def check_rule(self, game: RobotGameABC, move: game_schemas.Point, after_move=False):
