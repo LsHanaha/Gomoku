@@ -47,7 +47,7 @@ export const GAME_ENDPOINTS = {
 }
 
 export const BASE_URL = {
-  baseHost: "0.0.0.0",
+  baseHost: "51.250.104.143",
   basePort: "8888",
   baseProtocol: "http"
 }

@@ -9,7 +9,7 @@ import { storeAcceessToken } from "services/auth/storeTokens";
 import { TOKEN_LOCAL_STORAGE, BACKEND_ENDPOINTS } from "services/constants";
 
 const axiosApiInstance = axios.create({
-  baseURL: "http://0.0.0.0:8888",
+  baseURL: "http://51.250.104.143:8888",
 });
 
 async function refreshToken() {

@@ -8,7 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+#build/
 develop-eggs/
 dist/
 downloads/
@@ -79,7 +79,7 @@ venv.bak/
 
 .idea/
 .gomoku_front/.idea/
-.gomoku_front/build/
+#.gomoku_front/build/
 .gomoku_front/node_modules/
 
 logs/*
