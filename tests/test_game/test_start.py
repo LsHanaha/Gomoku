@@ -10,7 +10,7 @@ from app.schemas.game_schemas import NewGamePostRequest
 @pytest.mark.asyncio
 async def test_stored_game(app_with_game_tables, authorization_fixture):
     token = authorization_fixture.create_access_token(
-        subject="test_user",
+        subject="1",
         expires_time=timedelta(seconds=settings.mail_token_lifetime)
     )
     response = await app_with_game_tables.get("/game/check-stored", headers={'Authorization': f"Bearer {token}"})

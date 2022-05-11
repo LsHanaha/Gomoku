@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from app.main import web_app
 from app.models import Base, get_db, user_models
 from app import AuthJWT
+from app import get_async_redis_conn
 
 
 from app.config import settings
@@ -37,6 +38,7 @@ def event_loop():
 async def test_application(event_loop):
     Base.metadata.create_all(bind=_engine)
     web_app.dependency_overrides[get_db] = override_db
+    web_app.state.redis = await get_async_redis_conn()
 
     async with AsyncClient(app=web_app, base_url="http://testserver") as test_client:
         yield test_client
